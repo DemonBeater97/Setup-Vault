@@ -1,7 +1,7 @@
 // Setup Vault – Offline-Speicher für die App-Dateien.
 // Holt immer zuerst die neueste Version, ohne Netz die gespeicherte.
-const CACHE = "setup-vault-v9";
-const FILES = ["./", "index.html", "manifest.webmanifest", "icon-64.png", "icon-192.png", "icon-512.png", "icon-maskable.png", "apple-touch-icon.png"];
+const CACHE = "setup-vault-v11";
+const FILES = ["./", "index.html", "manifest.webmanifest", "icon-64.png", "icon-192.png", "icon-512.png", "icon-maskable.png", "apple-touch-icon.png", "qrcode.js"];
 
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting()));
