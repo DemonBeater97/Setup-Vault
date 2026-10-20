@@ -65,6 +65,7 @@ h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance;letter-spacing:.0
 
 .sync{display:inline-flex;align-items:center;gap:8px;font-size:12px;color:var(--mute);padding:7px 10px;border:1px solid var(--line);border-radius:8px}
 html:not(.solo) .sync,.is-apk .sync{cursor:pointer}
+.is-apk .sync::after{content:"›";font-size:15px;line-height:1;margin-left:2px;opacity:.6}
 @media (max-width:820px){html:not(.solo):not(.is-apk) .mtop .sync[data-s="ok"]::after{content:"· QR";color:var(--accent);margin-left:2px}}
 .sync i{width:8px;height:8px;border-radius:50%;background:var(--dim);flex:0 0 auto}
 .sync[data-s="ok"] i{background:var(--ok);box-shadow:0 0 0 3px rgba(79,209,139,.15)} .sync[data-s="ok"]{color:var(--fg)}
@@ -347,7 +348,7 @@ h2.sec{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--
       <figure><div class="qr" id="phoneQrApp"></div><figcaption><b>Android-App</b>Öffnet Setup Vault und verbindet sie mit dem PC</figcaption></figure>
       <figure><div class="qr" id="phoneQr"></div><figcaption><b>iPhone / ohne App</b>Öffnet „Vault (PC)“ im Browser. Dort „Zum Home-Bildschirm“</figcaption></figure>
     </div>
-    <p style="margin-bottom:2px">Klappt der Code nicht? In der Android-App auf <b>„Mit PC verbinden“</b> tippen und diese Adresse eintippen:</p>
+    <p style="margin-bottom:2px">Klappt der Code nicht? In der Android-App oben rechts auf <b>„Nur dieses Gerät“</b> tippen und diese Adresse eintippen:</p>
     <div id="phoneAddr" style="font-family:var(--mono);font-size:20px;color:var(--accent);text-align:center;word-break:break-all"></div>
     <div class="row2"><button class="btn primary" data-close>Fertig</button></div>
   </div>
@@ -1008,7 +1009,6 @@ function viewHome(){
   return `${mobileTop()}
   <div class="pagehead"><div><h1>Deine Bibliothek</h1><p>${gs.length} ${gs.length===1?"Spiel":"Spiele"} · ${state.profiles.length} ${state.profiles.length===1?"Profil":"Profile"}</p></div>
   <div class="headact"><button class="btn" data-act="phone">Handy verbinden</button><button class="btn" data-act="import">Code einfügen</button><button class="btn primary" data-act="newgame">+ Spiel</button></div></div>
-  ${IS_APP?`<button class="pcbar" data-act="pc"><span class="sync" data-s="${window.__sync||"local"}"><i></i></span><span><b>${API?"Mit PC verbunden":"Mit PC verbinden"}</b><small>${API?esc(API.replace(/^http:\/\/|\/$/g,""))+" · antippen zum Ändern":"Profile automatisch mit deinem PC abgleichen"}</small></span><span class="chev">›</span></button>`:""}
   <div class="grid">
     ${gs.map(g=>`<button class="game" style="--h:${g.h}" data-game="${esc(g.name)}"><span class="ini">${esc(initials(g.name))}</span><b>${esc(g.name)}</b><small>${g.list.length} ${g.list.length===1?"Profil":"Profile"}${g.updated?" · "+ago(g.updated):""}</small></button>`).join("")}
     <button class="addcard" data-act="newgame"><span class="plus">+</span>Spiel hinzufügen</button>
