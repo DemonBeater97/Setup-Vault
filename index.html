@@ -3,1234 +3,209 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Setup Vault – Spiel-Einstellungen speichern & teilen</title>
+<meta name="description" content="Kostenlose App für Android, iPhone und PC: Spiel-Einstellungen speichern, Schritt für Schritt abhaken und mit Freunden teilen. Mit Maiks MW4-Setup.">
 <meta name="theme-color" content="#0c0f14">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="manifest" href="manifest.webmanifest">
+<meta property="og:title" content="Setup Vault – Mein MW4-Setup zum Abhaken">
+<meta property="og:description" content="Controller, Grafik, Audio, PC – alles in einer App. Kostenlos für Android, iPhone und PC.">
+<meta property="og:image" content="screen.jpg">
 <link rel="icon" href="icon-64.png" type="image/png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<title>Setup Vault</title>
+<script>
+  // Wer Setup Vault schon auf dem Home-Bildschirm hat, landet direkt in der App
+  if (window.matchMedia("(display-mode: standalone)").matches || navigator.standalone) location.replace("app/");
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Barlow:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Barlow:wght@400;500;600;700&display=swap">
 <style>
-/* Layout: links Seitenleiste mit Spielen (PC), auf dem Handy untere Leiste. Ebenen: Bibliothek › Spiel › Profil */
 :root{
-  --bg:#0c0f14; --side:#10141b; --card:#151a22; --card2:#1b222c; --line:#262f3b; --line2:#334050;
-  --fg:#e9edf2; --mute:#8794a6; --dim:#5d6a7b;
-  --accent:#ffb547; --accent-ink:#1d1305; --ok:#4fd18b; --pc:#7aa7ff; --warn:#ff7a66; --w-ingame:#ffb547; --w-system:#7aa7ff; --w-software:#c79bff; --w-konsole:#4fd1c5; --w-geraet:#ff6fae;
+  --bg:#0c0f14; --card:#151a22; --card2:#1b222c; --line:#262f3b;
+  --fg:#e9edf2; --mute:#8f9bad; --accent:#ffb547; --ink:#1d1305;
+  --android:#4fd18b; --ios:#7aa7ff; --pc:#c79bff;
   --display:"Chakra Petch","Arial Narrow",system-ui,sans-serif;
   --body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
-  --mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
-  --r:10px;
   color-scheme:dark;
 }
 *{box-sizing:border-box}
-html,body{background:var(--bg);color:var(--fg);height:100%}
-:root{padding-top:env(safe-area-inset-top,0px)}
-body{margin:0}
-img{max-width:100%}
-[hidden]{display:none!important}
-body{font-family:var(--body);font-size:15px;line-height:1.45}
-button,input,select,textarea{font:inherit;color:inherit}
-button{cursor:pointer}
-:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance;letter-spacing:.01em}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 var(--body);-webkit-font-smoothing:antialiased}
+a{color:inherit}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+header{display:flex;align-items:center;gap:12px;padding:18px 0}
+header img{width:40px;height:40px;border-radius:10px}
+header b{font:700 20px var(--display);letter-spacing:.06em}
+header .tw{margin-left:auto;font-size:14px;color:var(--mute);text-decoration:none;border:1px solid var(--line);border-radius:8px;padding:6px 10px}
+header .tw:hover{color:var(--fg);border-color:#9146ff}
 
-.app{display:grid;grid-template-columns:260px minmax(0,1fr);min-height:100%}
-.side{background:var(--side);border-right:1px solid var(--line);padding-block:20px;padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:18px;display:flex;flex-direction:column;gap:22px;position:sticky;top:0;height:100vh;overflow:auto}
-.logo{display:flex;align-items:center;gap:10px;background:none;border:0;padding:0;text-align:left}
-.logo svg{flex:0 0 auto}
-.logo b{font-family:var(--display);font-size:20px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;display:block;line-height:1}
-.logo small{color:var(--mute);font-size:12px}
-.side h4{margin:0 0 8px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);font-weight:600}
-.gamelist{display:flex;flex-direction:column;gap:2px}
-.gamelist button{display:flex;align-items:center;gap:10px;background:transparent;border:0;border-radius:8px;padding:8px 10px;text-align:left;color:var(--mute);font-weight:600}
-.gamelist button:hover{background:var(--card);color:var(--fg)}
-.gamelist button[aria-current="true"]{background:var(--card2);color:var(--fg)}
-.gamelist .dot{width:10px;height:10px;border-radius:3px;background:hsl(var(--h) 75% 58%);flex:0 0 auto}
-.gamelist .n{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--dim)}
-.side .foot{margin-top:auto;display:flex;flex-direction:column;gap:10px}
+.hero{display:grid;grid-template-columns:1.15fr .85fr;gap:40px;align-items:center;padding:30px 0 50px}
+.hero h1{font:700 clamp(36px,6vw,60px)/1.02 var(--display);margin:0 0 16px;letter-spacing:.01em}
+.hero h1 span{color:var(--accent)}
+.hero p.lead{font-size:19px;color:#c8d0db;margin:0 0 26px;max-width:34em}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 28px;padding:0;list-style:none}
+.chips li{font-size:14px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:5px 12px;color:#c8d0db}
+.cta{display:flex;flex-wrap:wrap;gap:10px}
+.btn{display:inline-flex;align-items:center;gap:10px;text-decoration:none;font-weight:700;border-radius:10px;padding:13px 18px;border:1px solid var(--line);background:var(--card2)}
+.btn svg{width:20px;height:20px;flex:none}
+.btn.main{background:var(--accent);color:var(--ink);border-color:var(--accent)}
+.btn:hover{filter:brightness(1.08)}
+.phone{justify-self:center;width:min(300px,80vw);border-radius:34px;padding:10px;background:linear-gradient(160deg,#2a3341,#11151c);box-shadow:0 30px 80px -20px rgba(255,181,71,.25),0 0 0 1px #2c3644}
+.phone img{display:block;width:100%;border-radius:26px}
 
-.main{min-width:0;padding-block:28px 60px;padding-left:max(28px,env(safe-area-inset-left,0px));padding-right:max(28px,env(safe-area-inset-right,0px))}
-.inner{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:24px}
+h2{font:700 30px/1.1 var(--display);margin:0 0 8px}
+.sub{color:var(--mute);margin:0 0 26px}
+section{padding:46px 0;border-top:1px solid var(--line)}
 
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--line2);background:var(--card2);padding:9px 14px;border-radius:8px;font-weight:600;font-size:14px;white-space:nowrap}
-.btn:hover{border-color:var(--mute)}
-.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
-.btn.ghost{background:transparent}
-.btn.danger{color:var(--warn)}
-.btn.small{padding:6px 10px;font-size:13px}
-.btn svg{width:16px;height:16px}
+.dl{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;display:flex;flex-direction:column;position:relative}
+.card.you{border-color:var(--c);box-shadow:0 0 0 1px var(--c) inset}
+.card .tag{position:absolute;top:-11px;right:16px;background:var(--c);color:#0c0f14;font-size:12px;font-weight:700;border-radius:999px;padding:2px 10px;display:none}
+.card.you .tag{display:block}
+.card .ic{width:44px;height:44px;border-radius:10px;display:grid;place-items:center;background:color-mix(in srgb,var(--c) 16%,transparent);color:var(--c);margin-bottom:14px}
+.card .ic svg{width:24px;height:24px}
+.card h3{font:700 22px var(--display);margin:0 0 4px}
+.card .meta{color:var(--mute);font-size:14px;margin:0 0 14px}
+.card ol{margin:0 0 18px;padding-left:20px;color:#c8d0db;font-size:15px}
+.card ol li{margin:4px 0}
+.card .btn{margin-top:auto;justify-content:center;border-color:var(--c);color:var(--c);background:transparent}
+.card .btn.fill{background:var(--c);color:#0c0f14}
+.android{--c:var(--android)} .ios{--c:var(--ios)} .pcc{--c:var(--pc)}
 
-.sync{display:inline-flex;align-items:center;gap:8px;font-size:12px;color:var(--mute);padding:7px 10px;border:1px solid var(--line);border-radius:8px}
-.sync i{width:8px;height:8px;border-radius:50%;background:var(--dim);flex:0 0 auto}
-.sync[data-s="ok"] i{background:var(--ok);box-shadow:0 0 0 3px rgba(79,209,139,.15)} .sync[data-s="ok"]{color:var(--fg)}
-.sync[data-s="saving"] i,.sync[data-s="connecting"] i{background:var(--accent)}
-.sync[data-s="offline"] i,.sync[data-s="full"] i{background:var(--warn)}
+.feat{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.feat div{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+.feat b{display:block;font:700 18px var(--display);margin-bottom:4px}
+.feat p{margin:0;color:var(--mute);font-size:15px}
 
-.crumb{display:flex;align-items:center;gap:8px;color:var(--mute);font-size:14px;flex-wrap:wrap}
-.crumb button{background:none;border:0;padding:0;color:var(--mute);font-weight:600}
-.crumb button:hover{color:var(--fg)}
-.crumb span.sep{color:var(--dim)}
+details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin-bottom:10px}
+summary{cursor:pointer;font-weight:600}
+details p{margin:10px 0 0;color:#c8d0db}
 
-.pagehead{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
-.pagehead h1{font-size:clamp(26px,4vw,36px);font-weight:700}
-.pagehead p{margin:4px 0 0;color:var(--mute)}
-.headact{display:flex;gap:8px;flex-wrap:wrap}
+footer{padding:30px 0 50px;color:var(--mute);font-size:14px;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:8px 20px}
 
-/* Spielkarten */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
-.game{position:relative;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:linear-gradient(150deg,hsl(var(--h) 55% 24%),hsl(var(--h) 45% 11%) 70%);min-height:150px;padding:16px;display:flex;flex-direction:column;justify-content:flex-end;gap:4px;text-align:left}
-.game:hover{border-color:hsl(var(--h) 70% 55%)}
-.game .ini{position:absolute;right:-6px;top:-14px;font-family:var(--display);font-weight:700;font-size:92px;line-height:1;color:hsl(var(--h) 80% 70% / .14);letter-spacing:-.02em;pointer-events:none}
-.game b{font-family:var(--display);font-size:19px;font-weight:700;position:relative}
-.game small{color:hsl(var(--h) 30% 80%);font-size:13px;position:relative}
-.addcard{border:1.5px dashed var(--line2);border-radius:var(--r);background:transparent;min-height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--mute);font-weight:600}
-.addcard:hover{border-color:var(--accent);color:var(--fg)}
-.addcard .plus{font-size:28px;line-height:1;color:var(--accent)}
-
-/* Profilkarten */
-.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
-.pcard{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:12px;text-align:left}
-.pcard:hover{border-color:var(--line2);background:var(--card2)}
-.pcard .t{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
-.pcard b{font-family:var(--display);font-size:18px;font-weight:600;line-height:1.2}
-.pcard .by{color:var(--mute);font-size:13px}
-.chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--card2);border:1px solid var(--line2);color:var(--fg);white-space:nowrap}
-.chip.c-ok{color:var(--ok);border-color:rgba(79,209,139,.35);background:rgba(79,209,139,.08)}
-.chip.c-pc{color:var(--pc);border-color:rgba(122,167,255,.35);background:rgba(122,167,255,.08)}
-.split{display:flex;flex-direction:column;gap:6px}
-.bar{height:6px;border-radius:3px;background:var(--pc);overflow:hidden;display:flex}
-.bar i{display:block;height:100%;background:var(--ok)}
-.split .lg{display:flex;justify-content:space-between;font-size:12px;color:var(--mute);font-variant-numeric:tabular-nums}
-
-.recent{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
-.recent button{display:flex;align-items:center;gap:12px;background:var(--card);border:0;border-top:1px solid var(--line);padding:12px 14px;text-align:left}
-.recent button:first-child{border-top:0}
-.recent button:hover{background:var(--card2)}
-.recent .dot{width:10px;height:10px;border-radius:3px;background:hsl(var(--h) 75% 58%)}
-.recent .meta2{margin-left:auto;color:var(--dim);font-size:12px;font-family:var(--mono)}
-.recent b{font-weight:600}
-.recent small{color:var(--mute)}
-h2.sec{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);font-weight:600;font-family:var(--body)}
-
-/* Profilseite */
-.phero{background:linear-gradient(140deg,hsl(var(--h) 45% 18%),var(--card) 60%);border:1px solid var(--line);border-radius:14px;padding:22px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px 24px;align-items:end}
-.phero h1{font-size:clamp(24px,4vw,34px);font-weight:700;line-height:1.1}
-.phero .sub{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center;color:var(--mute);font-size:14px}
-.phero .stat{min-width:220px}
-.phero .stat b{font-family:var(--display);font-size:28px;font-variant-numeric:tabular-nums}
-.phero .stat b span{font-size:15px;color:var(--mute);font-weight:500}
-.phero .stat p{margin:0 0 8px;font-size:13px;color:var(--mute)}
-.actbar{grid-column:1 / -1;display:flex;gap:8px;flex-wrap:wrap;justify-content:space-between;align-items:center;border-top:1px solid var(--line);padding-top:16px}
-.seg{display:inline-flex;background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:3px;gap:2px}
-.seg button{background:transparent;border:0;border-radius:6px;padding:7px 12px;font-weight:600;font-size:14px;color:var(--mute)}
-.seg button[aria-pressed="true"]{background:var(--card2);color:var(--fg);box-shadow:0 1px 0 var(--line2)}
-.toggle{display:flex;gap:8px;align-items:center;font-size:14px;color:var(--mute);cursor:pointer}
-.toggle input{accent-color:var(--ok);width:18px;height:18px}
-
-.sticky{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:10px;margin-block:-10px;border-bottom:1px solid var(--line)}
-.jump{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
-.jump::-webkit-scrollbar{display:none}
-.jump button{flex:0 0 auto;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600;color:var(--mute);display:flex;gap:6px;align-items:center}
-.jump button:hover{color:var(--fg);border-color:var(--line2)}
-.jump button[aria-pressed="true"]{background:var(--card2);color:var(--fg);border-color:var(--accent)}
-.jump .cnt{font-family:var(--mono);font-size:11px;color:var(--dim)}
-.guidebar{display:flex;align-items:center;gap:12px;margin-top:10px}
-.guidebar .progress{flex:1;height:8px;background:var(--card2);border-radius:4px;overflow:hidden}
-.guidebar .progress i{display:block;height:100%;background:var(--ok);transition:width .25s}
-.guidebar span{font-family:var(--mono);font-size:12px;color:var(--mute);white-space:nowrap}
-
-.metaedit{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px}
-.metaedit label{display:flex;flex-direction:column;gap:5px;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);font-weight:600}
-.metaedit input,.metaedit select{background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:9px 10px;font-size:15px;text-transform:none;letter-spacing:0;color:var(--fg);font-weight:500}
-
-.sections{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:start}
-.sections.one{grid-template-columns:minmax(0,1fr)}
-.scard{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;scroll-margin-top:80px}
-.scard header{display:flex;align-items:center;gap:10px;padding:14px 16px 10px}
-.scard header .ic{width:30px;height:30px;border-radius:8px;background:var(--card2);display:grid;place-items:center;color:var(--accent);flex:0 0 auto}
-.scard header .ic svg{width:17px;height:17px}
-.scard header h3{font-size:17px;font-weight:600}
-.scard header .c{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--dim)}
-.scard .info{margin:0;padding:0 16px 10px;color:var(--mute);font-size:13px}
-.scard ul{list-style:none;margin:0;padding:0}
-.scard li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;padding:10px 16px;border-top:1px solid var(--line);align-items:center}
-.scard li .l{font-weight:500;min-width:0}
-.scard li:not(.ed){display:flex;flex-wrap:wrap;align-items:baseline;column-gap:12px}
-.scard li:not(.ed) .l{flex:1 1 11em;overflow-wrap:break-word;hyphens:auto}
-.scard li:not(.ed) .v{flex:0 1 auto;margin-left:auto;max-width:100%}
-.scard li:not(.ed) .nt{flex:1 1 100%}
-.scard li.gd{align-items:center}
-.scard li.gd input{flex:0 0 auto}
-.scard li.gd .nt{padding-left:32px}
-.scard li .v{font-family:var(--mono);font-size:13.5px;color:var(--accent);text-align:right;word-break:break-word}
-.scard li .nt a.lk{display:inline-block;margin:2px 4px 0 0;padding:1px 8px;border:1px solid var(--w-software);border-radius:4px;color:var(--w-software);text-decoration:none;font-weight:600}
-.scard li .nt{grid-column:1 / -1;overflow-wrap:anywhere;font-size:12.5px;color:var(--mute)}
-.wb{display:inline-flex;align-items:center;gap:4px;margin-right:8px;vertical-align:-2px;color:var(--wc)}
-.wb svg{width:15px;height:15px;flex:0 0 auto}
-.wb.lbl-on span{font-size:11px;font-weight:600}
-.wbtn{display:inline-flex;align-items:center;gap:4px;background:transparent;border:1px solid var(--wc);color:var(--wc);border-radius:4px;padding:3px 6px;font-size:11px;font-weight:600;white-space:nowrap}
-.wbtn svg{width:14px;height:14px}
-.wfilter{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:10px}
-.wfilter .lab{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);font-weight:600;margin-right:2px}
-.wfilter button{display:inline-flex;align-items:center;gap:6px;background:transparent;border:1px solid var(--line2);border-radius:999px;padding:5px 10px;font-size:12.5px;font-weight:600;color:var(--wc)}
-.wfilter button svg{width:14px;height:14px}
-.wfilter button .cnt{font-family:var(--mono);font-size:11px;color:var(--dim)}
-.wfilter button[aria-pressed="true"]{background:color-mix(in srgb,var(--wc) 16%,transparent);border-color:var(--wc)}
-.wfilter button:disabled{opacity:.35;cursor:default}
-.scard li .pcflag{display:inline-block;margin-left:6px;font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;color:var(--pc);border:1px solid rgba(122,167,255,.4);border-radius:3px;padding:0 4px;vertical-align:2px}
-.scard .empty{padding:16px;color:var(--dim);font-size:13px;border-top:1px solid var(--line)}
-.scard .add{padding:10px 16px 14px;border-top:1px solid var(--line)}
-
-/* Bearbeiten */
-.scard li.ed{grid-template-columns:minmax(0,1fr) minmax(0,.8fr) auto;align-items:start}
-.scard li.ed textarea{display:block;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:7px 9px;width:100%;min-width:0;font:inherit;font-size:14px;line-height:1.35;color:var(--ink,inherit);resize:none;overflow:hidden;overflow-wrap:anywhere;white-space:pre-wrap}
-.scard li.ed .val{font-family:var(--mono);color:var(--accent)}
-.scard li.ed .note{grid-column:1 / -1;font-size:13px;color:var(--mute)}
-.scard li.ed textarea:focus{border-color:var(--accent);outline:none}
-.tools{display:flex;gap:4px;align-items:center}
-.tag{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.05em;padding:4px 7px;border-radius:4px;border:1px solid currentColor;background:transparent;white-space:nowrap}
-.tag.all{color:var(--ok)} .tag.pc{color:var(--pc)}
-.x{background:transparent;border:0;color:var(--dim);font-size:20px;line-height:1;padding:2px 6px}
-.x:hover{color:var(--warn)}
-
-/* Anleitung */
-.scard li.gd{grid-template-columns:auto minmax(0,1fr) auto;cursor:pointer}
-.scard li.gd input{width:20px;height:20px;accent-color:var(--ok)}
-.scard li.gd .nt{grid-column:2 / -1}
-.scard li.gd.done .l,.scard li.gd.done .v{opacity:.4;text-decoration:line-through}
-.scard li.gd:hover{background:var(--card2)}
-
-.dangerzone{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap}
-
-/* Dialoge */
-.dlg{position:fixed;inset:0;background:rgba(4,6,9,.8);display:flex;align-items:center;justify-content:center;padding:16px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));z-index:40}
-.dlg .box{background:var(--card);border:1px solid var(--line2);border-radius:14px;width:100%;max-width:540px;max-height:90%;overflow:auto;padding:20px;display:flex;flex-direction:column;gap:12px}
-.dlg h2{font-size:22px}
-.dlg p{margin:0;color:var(--mute);font-size:14px}
-.dlg textarea,.dlg input{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px}
-.dlg textarea{min-height:130px;font-family:var(--mono);font-size:12px;resize:vertical;word-break:break-all}
-.dlg .row2{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
-.msg{font-size:13px;min-height:1.2em}
-.msg.ok{color:var(--ok)} .msg.err{color:var(--warn)}
-.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:8px;font-weight:600;z-index:50}
-
-/* Handy */
-.mtop,.tabbar{display:none}
 @media (max-width:820px){
-  .app{grid-template-columns:minmax(0,1fr)}
-  .side{display:none}
-  .main{padding-block:12px 100px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-  .mtop{display:flex;justify-content:space-between;align-items:center;gap:10px}
-  html{scroll-padding-bottom:calc(96px + env(safe-area-inset-bottom,0px));scroll-padding-top:130px}
-  .tabbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--side);border-top:1px solid var(--line);padding-top:6px;padding-bottom:calc(6px + env(safe-area-inset-bottom,0px));padding-left:max(8px,env(safe-area-inset-left,0px));padding-right:max(8px,env(safe-area-inset-right,0px))}
-  .tabbar button{flex:1;background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;font-weight:600;color:var(--mute);padding:6px 0}
-  .tabbar button[aria-current="true"]{color:var(--accent)}
-  .tabbar svg{width:22px;height:22px}
-  .sections{grid-template-columns:minmax(0,1fr)}
-  .phero{grid-template-columns:minmax(0,1fr);padding:18px}
-  .phero .stat{min-width:0}
-  .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-  .game,.addcard{min-height:120px}
-  .game .ini{font-size:70px}
+  .hero{grid-template-columns:1fr;gap:30px;padding-top:10px}
+  .phone{order:2}
+  .dl,.feat{grid-template-columns:1fr}
+  .cta .btn{flex:1 1 100%;justify-content:center}
 }
-.solo [data-act="phone"]{display:none!important}
-/* Handy-Feinschliff */
-@media (max-width:820px){
-  .pagehead .headact .btn:not(.primary){display:none}
-  .pagehead{align-items:center}
-  .crumb>:last-child,.crumb>.sep:nth-last-child(2){display:none}
-  .crumb{font-size:13px}
-  .actbar{flex-direction:column;align-items:stretch;gap:12px}
-  .seg{display:flex}
-  .seg button{flex:1;padding:9px 6px}
-  .actbar .headact{justify-content:space-between;align-items:center}
-  .scard li.ed{display:flex;flex-direction:column;align-items:stretch;gap:6px;padding:12px 14px}
-  .scard li.ed .tools{order:4;display:flex;gap:6px;align-items:center}
-  .scard li.ed .tools .x{margin-left:auto}
-  input,select,textarea{font-size:16px!important}
-  .scard li.ed textarea{padding:10px 12px}
-  .recent .meta2{display:none}
-  .mtop .sync{font-size:11px;padding:6px 8px}
-}
-@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 </style>
+<script data-goatcounter="https://demonbeater.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </head>
 <body>
+<div class="wrap">
+  <header>
+    <img src="icon-192.png" alt="">
+    <b>SETUP VAULT</b>
+    <a class="tw" href="https://www.twitch.tv/mrmaik240" target="_blank" rel="noopener">Live auf Twitch: MrMaik240</a>
+  </header>
 
-<div class="app">
-  <aside class="side" aria-label="Navigation">
-    <button class="logo" data-go="home" aria-label="Zur Bibliothek">
-      <img src="icon-64.png" width="36" height="36" alt="" style="border-radius:9px">
-      <span><b>Setup Vault</b><small>Deine Spiel-Einstellungen</small></span>
-    </button>
+  <div class="hero">
     <div>
-      <h4>Spiele</h4>
-      <div class="gamelist" id="sideGames"></div>
-    </div>
-    <div class="foot">
-      <button class="btn" data-act="phone">Handy verbinden</button>
-      <button class="btn" data-act="import">Code einfügen</button>
-      <span class="sync" id="sync" data-s="local" role="status"><i></i><span>Nur dieses Gerät</span></span>
-    </div>
-  </aside>
-
-  <main class="main">
-    <div class="inner" id="view"></div>
-  </main>
-</div>
-
-<nav class="tabbar" aria-label="Navigation">
-  <button data-go="home" id="tbHome"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Bibliothek</button>
-  <button data-act="import"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>Code einfügen</button>
-  <button data-act="newgame"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Spiel</button>
-</nav>
-
-<div class="dlg" id="dlgShare" hidden>
-  <div class="box" role="dialog" aria-labelledby="hShare">
-    <h2 id="hShare">Profil teilen</h2>
-    <p>Kopiere den Code und schick ihn an einen Kollegen (Discord, WhatsApp). Er öffnet Setup Vault, tippt auf „Code einfügen“ und hat dein Profil.</p>
-    <textarea id="shareCode" readonly></textarea>
-    <div class="msg" id="shareMsg"></div>
-    <div class="row2">
-      <button class="btn ghost" data-close>Schließen</button>
-      <button class="btn" id="shareText">Als Text kopieren</button>
-      <button class="btn" id="shareSend" hidden>Senden …</button>
-      <button class="btn primary" id="shareCopy">Code kopieren</button>
-    </div>
-  </div>
-</div>
-
-<div class="dlg" id="dlgImport" hidden>
-  <div class="box" role="dialog" aria-labelledby="hImport">
-    <h2 id="hImport">Code einfügen</h2>
-    <p>Füge den Code ein, den du bekommen hast. Das Profil kommt als neues Profil dazu, deine eigenen bleiben unverändert.</p>
-    <textarea id="importCode" placeholder="CSS1-…"></textarea>
-    <div class="msg" id="importMsg"></div>
-    <div class="row2">
-      <button class="btn ghost" data-close>Abbrechen</button>
-      <button class="btn primary" id="importDo">Übernehmen</button>
-    </div>
-  </div>
-</div>
-
-<div class="dlg" id="dlgGame" hidden>
-  <div class="box" role="dialog" aria-labelledby="hGame">
-    <h2 id="hGame">Spiel hinzufügen</h2>
-    <p>Zum Beispiel Valorant, Fortnite, Apex Legends oder Rainbow Six Siege.</p>
-    <input id="gameName" placeholder="Name des Spiels" maxlength="60">
-    <div class="msg" id="gameMsg"></div>
-    <div class="row2">
-      <button class="btn ghost" data-close>Abbrechen</button>
-      <button class="btn primary" id="gameDo">Hinzufügen</button>
-    </div>
-  </div>
-</div>
-
-<div class="dlg" id="dlgPhone" hidden>
-  <div class="box" role="dialog" aria-labelledby="hPhone">
-    <h2 id="hPhone">Handy verbinden</h2>
-    <p>Handy ins gleiche WLAN wie den PC, dann den Code scannen oder die Adresse im Handy-Browser öffnen.</p>
-    <div id="phoneQr" style="background:#fff;border-radius:10px;padding:12px;width:max-content;max-width:100%;margin:4px auto" hidden></div>
-    <div id="phoneAddr" style="font-family:var(--mono);font-size:18px;color:var(--accent);text-align:center;word-break:break-all"></div>
-    <p>Tipp: Im Handy-Browser über das Menü „Zum Startbildschirm hinzufügen“ wählen. Dann hast du Setup Vault wie eine App auf dem Handy.</p>
-    <div class="row2"><button class="btn primary" data-close>Fertig</button></div>
-  </div>
-</div>
-
-<div class="dlg" id="dlgDel" hidden>
-  <div class="box" role="dialog" aria-labelledby="hDel">
-    <h2 id="hDel">Profil löschen?</h2>
-    <p id="delTxt"></p>
-    <div class="row2">
-      <button class="btn ghost" data-close>Behalten</button>
-      <button class="btn primary" id="delYes">Löschen</button>
-    </div>
-  </div>
-</div>
-
-<div class="toast" id="toast" hidden></div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
-<script>
-const ICONS={
-  audio:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/></svg>',
-  controller:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 8h10a4 4 0 0 1 3.9 4.8l-.9 4.2a2 2 0 0 1-3.5.8L15 16H9l-1.5 1.8a2 2 0 0 1-3.5-.8l-.9-4.2A4 4 0 0 1 7 8z"/><path d="M8 11v3M6.5 12.5h3M15.5 12h.01M17.5 13.5h.01"/></svg>',
-  mkb:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="6" y="3" width="12" height="18" rx="6"/><path d="M12 7v4"/></svg>',
-  grafik:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>',
-  system:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="5" width="14" height="14" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/></svg>',
-  programme:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M7 6.5h.01M10 6.5h.01"/></svg>',
-  gameplay:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>'
-};
-const SECTIONS = [
-  {key:"audio", name:"Audio", info:"Ingame-Audio plus Kopfhörer und Windows-Sound."},
-  {key:"controller", name:"Controller", info:"Stick, Totzonen, Empfindlichkeit. Meist 1:1 auf PlayStation und Xbox."},
-  {key:"mkb", name:"Maus & Tastatur", info:"Empfindlichkeit, DPI und Tastenbelegung."},
-  {key:"grafik", name:"Grafik & Anzeige", info:"Sichtfeld und Unschärfe gibt es oft auch auf Konsole, der Rest ist PC."},
-  {key:"gameplay", name:"Spielablauf & Oberfläche", info:"Bewegung, Kampf, Minikarte, Fadenkreuz und Co."},
-  {key:"system", name:"PC-System", info:"Windows- und Grafiktreiber-Einstellungen außerhalb des Spiels."},
-  {key:"programme", name:"PC-Programme", info:"Discord, Battle.net, Sonar und andere Programme neben dem Spiel."}
-];
-const PLATS=["PC – Maus/Tastatur","PC – Controller","PlayStation","Xbox"];
-const WHERE={
-  ingame:{name:"Im Spiel",long:"Im Spiel-Menü einstellen",ic:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 8h10a4 4 0 0 1 3.9 4.8l-.9 4.2a2 2 0 0 1-3.5.8L15 16H9l-1.5 1.8a2 2 0 0 1-3.5-.8l-.9-4.2A4 4 0 0 1 7 8z"/><path d="M8 11v3M6.5 12.5h3"/></svg>'},
-  system:{name:"Windows",long:"In Windows oder im Grafiktreiber einstellen",ic:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8"/><rect x="13" y="3" width="8" height="8"/><rect x="3" y="13" width="8" height="8"/><rect x="13" y="13" width="8" height="8"/></svg>'},
-  software:{name:"Software",long:"In einem Programm neben dem Spiel einstellen (Discord, Sonar, Battle.net …)",ic:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>'},
-  konsole:{name:"Konsole",long:"Im Menü der PlayStation oder Xbox einstellen (nicht im Spiel)",ic:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M10 6h4M12 17h.01"/></svg>'},
-  geraet:{name:"Am Controller",long:"Direkt am Controller einstellen (Schalter, Paddles, Sticks)",ic:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="8" width="20" height="8" rx="4"/><circle cx="16" cy="12" r="2.2" fill="currentColor"/></svg>'}
-};
-const WORDER=["ingame","system","software","konsole","geraet"];
-function inferW(sec,label){
-  const l=String(label).toLowerCase();
-  if(sec==="programme"||/sonar|dpi|abfragerate|maus-software|headset-app|ghub|synapse|discord|battle\.net/.test(l))return "software";
-  if(sec==="system"||/windows|energieplan|zeigerpräzision|gpu-planung|raumklang/.test(l))return "system";
-  return "ingame";
-}
-function fixW(p){SECTIONS.forEach(s=>(p.s[s.key]||[]).forEach(x=>{if(!WHERE[x.w])x.w=inferW(s.key,x.label);}));return p;}
-function wBadge(w,withLabel){const d=WHERE[w]||WHERE.ingame;return `<span class="wb ${withLabel?"lbl-on":""}" style="--wc:var(--w-${w})" title="${d.long}">${d.ic}${withLabel?`<span>${d.name}</span>`:""}</span>`;}
-const r = (label,value,all,note="",w) => ({id:uid(),label,value,all,note,w:w||null});
-function uid(){return Math.random().toString(36).slice(2,10)}
-
-/* ---------- Fest eingebaute Vorlagen ----------
-   v = Version. Wird sie erhöht, bekommt jedes Gerät beim nächsten Start die neue Fassung. */
-const SONAR={
-  game:["b1c32b65-59a2-4725-b9db-6d88a8f56cd6","6c7d6a31-ce64-4cab-9531-cfca581a95f8","717f8624-41ad-450d-8370-49661ee35235","d1bbc7f3-d784-4b91-b147-d443ffc11e40"],
-  chat:["334a9324-9136-4ce1-8998-a405475b51d3","a2467f7d-a4f3-4ea9-8fdc-9670ab9d8bc2","0ad10c78-cf90-4b46-a2f7-f0cca34d5b81","0aa9b027-84f6-4c2c-bcd1-eee8a76be776"],
-  medien:["31885dbd-57ac-4e4e-8832-84afce41a865","948bc0dc-8462-4aaf-bee8-cc596aff4f4c","f14b577f-e4bd-4e84-8c70-d7f7008628df"],
-  aux:["a5e22c4f-b07a-4bd7-a058-eae44d9683cf"],
-  mikro:["2ddb768d-c98d-467e-8e89-d2372e37bc3e"]
-};
-function sonarLinks(k){return SONAR[k].map(id=>`https://www.steelseries.com/deeplink/gg/sonar/config/v1/import?url=${btoa("https://community-configs.steelseriescdn.com/v1/"+id)}`).join(" ");}
-/* Links in Notizen als kleine Knöpfe anzeigen */
-function noteHtml(t){let n=0;return esc(t).replace(/https?:\/\/[^\s<]+/g,u=>`<a class="lk" href="${u}" target="_blank" rel="noopener">Link ${++n}</a>`);}
-
-function sample(){
-  const I="ingame",SW="software",SY="system",KO="konsole",GE="geraet";
-  const prof={id:"mw4-komplett",bv:2,created:1,updated:Date.now(),name:"MW4 Komplett – Vorlage für alle",author:"Profi-Mix aus der Beta (Dekii, Swagg, ColtHavok, LunchTime u. a.) + Guides, abgeglichen mit Maiks Setup",game:"Call of Duty: Modern Warfare 4",plat:"PC – Controller",s:{
-    audio:[
-      r("Spiel-Gesamtlautstärke","100",true,"Lauter/leiser lieber am Headset oder in Sonar regeln",I),
-      r("Spiel-Musiklautstärke","0",true,"",I),
-      r("Dialoglautstärke","Nach Geschmack (z. B. 6–30)",true,"Ansagen im Spiel. Maik nutzt 6",I),
-      r("Effektlautstärke","100",true,"",I),
-      r("Filmsequenz-Musiklautstärke","0",true,"",I),
-      r("Audio-Mix","Kopfhörer",true,"Alternative: Kopfhörer-Bassboost bzw. „Boost Hoch“, schärfere Schritte, auf Dauer anstrengender",I),
-      r("Mono-Audio","Aus",true,"Nur an, wenn du auf einem Ohr schlecht hörst",I),
-      r("Lizenzierte Musik stummschalten","An, wenn du streamst",true,"Schützt vor Urheberrechts-Sperren auf Twitch/YouTube",I),
-      r("Asymmetrische Hörkompensation","Aus",true,"",I),
-      r("Tinnitus-Ton reduzieren","An",true,"Pfeifen nach Explosionen überdeckt sonst Schritte",I),
-      r("Kopfschuss- & Abschusswarnungen","An",true,"",I),
-      r("Lautsprecher/Kopfhörer Soundgerät","Sonar – Gaming (sonst dein Headset)",false,"",I),
-      r("Lautsprecher-Ausgabe","Stereo",false,"",I),
-      r("Verbesserter Kopfhörermodus","Aus, wenn Sonar o. ä. den Klang macht",false,"Nie doppelt Raumklang, das verfälscht die Richtung. Ohne Sonar: An testen",I),
-      r("Sprach-Chat","An",true,"",I),
-      r("Sprach-Chat-Lautstärke","Nach Geschmack (z. B. 40)",true,"Wer über Discord redet, kann leiser",I),
-      r("Näherungs-Chat","An",true,"Man hört Gegner reden. Aus, wenn es nervt",I),
-      r("Gerichteter Team-Chat","An",true,"",I),
-      r("Mikrofonmodus","Sprechtaste",true,"",I),
-      r("Sprach-Chat-Wiedergabegerät","Sonar – Chat (sonst Headset)",false,"Dann greift der ChatMix-Regler auch im Spiel",I),
-      r("Audioverbesserungen (jedes Ausgabegerät)","Aus",false,"Einstellungen › System › Sound › Gerät. Immer aus",SY),
-      r("Räumlicher Sound / Raumklang (jedes Gerät)","Aus",false,"Stereo kommt sonst zu nah. Sonar übernimmt das",SY),
-      r("Ausgabeformat","Das Beste, was das Gerät kann",false,"Sonar-Geräte: 8 Kanäle, 24 Bit, 96000 Hz",SY),
-      r("Kommunikation (Weitere Soundeinstellungen)","Nichts unternehmen",false,"Sonst wird das Spiel bei jedem Gespräch leiser",SY),
-      r("Lautstärkeausgleich am Headset (optional)","An, Freigabezeit kurz",false,"Leises lauter, Lautes leiser. Wirkt zusätzlich zum Sonar-Klang. Geschmackssache",SY),
-      r("PS5 Audio-Fokus","An, Typ: Hohe Töne verstärken",true,"Einstellungen › Ton › Lautstärke › Bedienungshilfen › Audio-Fokus",KO),
-      r("3D-Audio (PS5) / Raumklang (Xbox)","Testen",true,"An und aus ausprobieren, was die Richtung besser zeigt behalten",KO),
-      r("Headset an Konsole","Kabel in den Controller oder eigener Dongle",true,"",KO)
-    ],
-    controller:[
-      r("Tastenbelegung","Standard mit Paddles, Taktisch ohne Paddles",true,"Mit Paddles bleibt der Daumen am rechten Stick",I),
-      r("Vibration","Aus",true,"",I),
-      r("Trigger-Effekt (PS5)","Aus",true,"",I),
-      r("Abzug-Totzone (L2 / R2)","0 / 0",true,"Besonders mit Abzugs-Stopps",I),
-      r("Stick-Empfindlichkeit horizontal / vertikal","1,5–1,6 / gleich",true,"Langsam steigern, beide gleich",I),
-      r("ZV-Empfindlichkeits-Multiplikator","1,00",true,"",I),
-      r("Zoom-Empfindlichkeit pro Stufe","Gleichmäßig 0,90–0,95",true,"Keine Stufe deutlich langsamer als die Nachbarn",I),
-      r("Zielreaktionskurve","Dynamisch",true,"",I),
-      r("Steigungsskalierung","0,90–1,00",true,"",I),
-      r("Zielvorrichtung (ZV)","Halten",true,"",I),
-      r("ZV-Übergangszeit","Sofort",true,"",I),
-      r("Zielhilfe","An",true,"",I),
-      r("ZV-Anvisierhilfe","An",true,"",I),
-      r("Bewegungssensor (Gyro)","Aus",true,"",I),
-      r("Linker Stick Minimum / Maximum","So niedrig wie ohne Drift / 60–85",true,"Mit Taktiksprint-Hilfe auch ~45 (dann sprintet man schon bei halbem Ausschlag)",I),
-      r("Rechter Stick Minimum / Maximum","2–5 / 99",true,"Hall/TMR-Sticks: 2. Zieht das Fadenkreuz von allein, erhöhen",I),
-      r("Zielen-Eingabegerät (Reiter Tastatur & Maus)","Controller",false,"Sonst springt das Spiel beim Mausrempler auf Maus und die Zielhilfe ist weg",I),
-      r("Abzugs-Stopps","An (Schalter am Controller)",true,"Schneller schießen und zielen",GE),
-      r("Paddles belegen","Springen, Rutschen, Nachladen, Waffe wechseln",true,"Beispiel. Wichtig ist: alles, wofür der Daumen sonst den rechten Stick verlässt",GE)
-    ],
-    mkb:[
-      r("Zielen-Eingabegerät","Maus",false,"",I),
-      r("Maus-DPI","800",false,"In der Maus-Software",SW),
-      r("Abfragerate","1000–4000 Hz",false,"8000 Hz nur, wenn die FPS stabil bleiben",SW),
-      r("Mausempfindlichkeit","Ca. 35 cm Mausweg pro 360°",false,"Profi-Wert war 8,00 in der BO7-Skala. MW4 hat eine eigene Skala, im Schießstand einstellen",I),
-      r("ZV-Empfindlichkeits-Multiplikator","1,00",false,"",I),
-      r("Monitor-Abstand-Koeffizient","1,33",false,"Profi-Wert",I),
-      r("Mausbeschleunigung / Glättung","Aus / 0",false,"",I),
-      r("Vereinfachte Steuerungsvoreinstellung","Aus",false,"",I),
-      r("Motorik entlasten-Voreinstellung","Aus",false,"",I),
-      r("Laufen","W / A / S / D",false,"",I),
-      r("Sprinten / Taktiksprint","Feststelltaste (CAPS)",false,"Profi-Belegung",I),
-      r("Ducken / Rutschen","Alt links",false,"Profi-Belegung",I),
-      r("Hinlegen / Hechtsprung","X",false,"Profi-Belegung",I),
-      r("Springen / Klettern","Leertaste",false,"",I),
-      r("Waffe wechseln","Mausrad",false,"Profi-Belegung",I),
-      r("Schießen / Zielen","Linke / rechte Maustaste",false,"",I),
-      r("Nachladen / Interagieren","R / F",false,"",I),
-      r("Nahkampf","V oder Maus-Seitentaste",false,"",I),
-      r("Tödliche / Taktische Ausrüstung","E / Q oder Maus-Seitentasten",false,"",I),
-      r("Feld-Upgrade","3",false,"X ist durch Hinlegen belegt",I),
-      r("Panzerplatte","G",false,"",I),
-      r("Abschussserien","4 / 5 / 6",false,"",I),
-      r("Markieren (Ping)","Mittlere Maustaste",false,"",I),
-      r("Sprechtaste","Z",false,"",I)
-    ],
-    grafik:[
-      r("Anzeigemodus","Exklusives Vollbild",false,"Mit G-Sync die sauberste Wahl",I),
-      r("Bildwiederholfrequenz","Höchste (z. B. 239,99)",false,"",I),
-      r("Bildschirmauflösung","Nativ",false,"",I),
-      r("Hintergrund-Shader-Vorab-Laden","An",false,"Vor dem ersten Match fertig laufen lassen",I),
-      r("Anzeige-Gamma","2.2 (sRGB)",false,"",I),
-      r("NVIDIA Reflex","An + Boost",false,"",I),
-      r("V-Sync (Spiel / Menüs)","Aus / Aus",false,"",I),
-      r("Bildratenbegrenzung im Spiel","3 unter deinen Hz (240 Hz → 237)",false,"Über den Hz schaltet G-Sync ab. Mit NVIDIA-V-Sync + Reflex begrenzt es sich selbst",I),
-      r("Bildratenbegrenzung Menü / außerhalb des Fokus","60 / 60",false,"Außerhalb des Fokus 30 sehen Zuschauer beim Alt-Tab",I),
-      r("Frame Generation","Aus",false,"Im Mehrspieler aus",I),
-      r("Raytracing","Aus",false,"Kostet FPS, bringt im Gefecht nichts",I),
-      r("Auflösungsskalierung","DLSS Qualität oder nativ (SMAA)",false,"Nativ nur, wenn die FPS dauerhaft am Limit sind",I),
-      r("Schärfe","50–70",false,"",I),
-      r("VRAM-Skalierungsziel","60–80",false,"",I),
-      r("Texturauflösung","Normal",false,"",I),
-      r("Partikelauflösung","Sehr gering",false,"",I),
-      r("Trefferwirkung","An",false,"",I),
-      r("Dauerhafte Effekte","Aus",false,"",I),
-      r("Shader-Qualität","Gering",false,"",I),
-      r("Schattenqualität","Normal",false,"Höher nur, wenn die FPS reichen",I),
-      r("Screen-Space-Reflexionen","Aus",false,"",I),
-      r("Wasserqualität","Aus",false,"",I),
-      r("Qualität Verzögerte Physik","Aus",false,"",I),
-      r("Welt-Bewegungsunschärfe","Nur Zwischensequenzen / Aus",true,"",I),
-      r("Waffen-Bewegungsunschärfe","Aus",true,"",I),
-      r("Welt- / Waffen-Tiefenschärfe","Aus / Aus",true,"",I),
-      r("Bildrauschen","0",true,"",I),
-      r("Sichtfeld (FOV)","110",true,"105–120 je nach Geschmack",I),
-      r("Zielvorrichtungs-Sichtfeld","Beeinflusst",true,"",I),
-      r("Externe Ansicht","100–110",true,"Nur für Third-Person-Modi",I),
-      r("Fahrzeug-Sichtfeld","Breit",true,"",I),
-      r("Kamerabewegung Egoperspektive","Minimal (25 %)",true,"Profi-Konsens",I),
-      r("Kamerabewegung der externen Ansicht","Minimal (25 %)",true,"",I)
-    ],
-    gameplay:[
-      r("Sprinten","Umschalten",true,"",I),
-      r("Taktiksprint","Doppelt tippen",true,"",I),
-      r("Sprint-Hilfe","Taktiksprint-Hilfe oder Aus",true,"Taktiksprint-Hilfe passt zu linkem Stick Maximum ~45",I),
-      r("Rutschen / Verzögerung","Tippen zum Rutschen / Kurz",true,"",I),
-      r("Kampfrolle","Doppelt tippen",true,"",I),
-      r("Klettern-Hilfe / Klettern am Boden","Aus / Aus",true,"Volle Kontrolle",I),
-      r("Autom. Türspaltblick","Aus",true,"",I),
-      r("Eckenblick","An",true,"Geschmackssache",I),
-      r("Waffenstütze-Aktivierung","ZV + Nahkampf",true,"Profi-Konsens: beim Zielen an der Kante R3, weniger Rückstoß",I),
-      r("Waffenstütze-Bewegung","An",true,"",I),
-      r("Waffenstütze verlassen (Bewegung)","Sofort",true,"",I),
-      r("'Zoom ändern'-Aktivierung","Sprinten/Taktiksprint/Fokussieren",true,"Profi-Konsens",I),
-      r("Alternativer Ausrüstungswurf","Nahkampf",true,"Profi-Konsens",I),
-      r("Dedizierte Nahkampfwaffe","Nahkampf-Taste halten",true,"",I),
-      r("Panzerplattenverhalten","Alle anwenden",true,"",I),
-      r("Ausrüstungs- / Manuellfeuer-Verhalten","Halten / Halten",true,"",I),
-      r("Fokus-Verhalten","Halten",true,"",I),
-      r("Interagieren/Nachladen-Verhalten","Priorisiere Interagieren",true,"",I),
-      r("Klettern / Taktiksprint bricht Nachladen ab","Aus / Aus",true,"",I),
-      r("Automatischer Waffenwechsel wenn leer","An",true,"Geschmackssache: aus, wenn du lieber nachlädst",I),
-      r("Akimbo-Verhalten","Unabhängig",true,"",I),
-      r("HUD-Grenzen","So klein ziehen, wie es geht",true,"Maiks Tipp: alles näher an der Mitte, weniger Augen- und Kopfbewegung",I),
-      r("Minikarte-Form / Rotation","Quadratisch / An",true,"",I),
-      r("Kompass / Ausdauerleiste","An / An",true,"",I),
-      r("HUD-Widget-Rütteln","Aus",true,"",I),
-      r("Fadenkreuze","Statisch, mit Punkt",true,"",I),
-      r("Fadenkreuzfarbe","Auffällig, z. B. Magenta FF00C3",true,"Farbe, die es auf den Karten kaum gibt",I),
-      r("Treffermarkierungen / schadensbasiert","An / An",true,"",I),
-      r("Telemetrie: FPS, Ping, Paketverlust","An",false,"Zeigt sofort, ob es am PC oder an der Leitung liegt",I),
-      r("Spieltipps / Kurzinfo","Aus",true,"",I),
-      r("Bewegungskrankheit-Voreinstellung","Aus",true,"",I),
-      r("Farbfilter / Ziel","Filter 2 / Beide",true,"Interface › Lesbarkeit › Farbanpassung. Gegner heben sich besser ab",I),
-      r("Welt- / Interface-Farbintensität","100 / 100",true,"",I),
-      r("Feind-Farbe","Kräftiges Rot",true,"Gut von Team (Blau) und Party (Grün) unterscheidbar",I),
-      r("Einstellungen in Cloud speichern","An",true,"Reiter Konto & Netzwerk. Dann sind die Einstellungen auf jedem Gerät gleich",I)
-    ],
-    system:[
-      r("Bildwiederholrate","Höchste (z. B. 240 Hz)",false,"Einstellungen › System › Anzeige › Erweiterte Anzeige",SY),
-      r("Dynamische Aktualisierungsrate","Aus",false,"",SY),
-      r("Hardwarebeschleunigte GPU-Planung","An",false,"Anzeige › Grafik › Erweiterte Grafikeinstellungen. Nötig für DLSS-Frame-Generierung",SY),
-      r("Optimierungen für Spiele im Fenstermodus","An",false,"Anzeige › Grafik. Weniger Verzögerung beim Alt-Tab",SY),
-      r("CoD-Grafikeinstellung","Höchstleistung (dedizierte Grafikkarte)",false,"Anzeige › Grafik › App auswählen",SY),
-      r("Spielmodus","An",false,"Einstellungen › Spielen",SY),
-      r("Energiemodus","Beste Leistung",false,"System › Energie",SY),
-      r("Game Bar per Controller / Aufzeichnungen","Aus / Aus",false,"Aufnahme macht OBS",SY),
-      r("Autostart","Nur das, was du wirklich brauchst",false,"Maiks Tipp: Apps › Autostart, alles Unnötige aus",SY),
-      r("Zeigerpräzision verbessern","Aus",false,"Maus › Weitere Mauseinstellungen › Zeigeroptionen",SY),
-      r("NVIDIA-Systemsteuerung","Fehlt? Im Microsoft Store installieren",false,"Maiks Tipp",SY),
-      r("NVIDIA: Ausgabe-Farbtiefe / Bereich","Höchste / Voll",false,"Auflösung ändern › NVIDIA-Farbeinstellungen",SY),
-      r("NVIDIA: G-SYNC","Aktivieren, wenn der Monitor es kann",false,"„Nur Vollbild“ reicht bei exklusivem Vollbild, sonst „Fenster- und Vollbild“. Flackert es beim OLED in Menüs: feste Aktualisierungsrate",SY),
-      r("NVIDIA: Vertikale Synchronisierung","Ein mit G-Sync, sonst Aus",false,"Mit G-Sync: Treiber-V-Sync ein, im Spiel aus, Reflex an",SY),
-      r("NVIDIA: Energieverwaltung","Maximale Leistung bevorzugen",false,"",SY),
-      r("NVIDIA: Modus für geringe Latenz","Aus",false,"Reflex im Spiel übernimmt das",SY),
-      r("NVIDIA: Bevorzugte Aktualisierungsrate","Höchste verfügbar",false,"",SY),
-      r("NVIDIA: Dreifach-Puffer / Threaded-Optimierung","Aus / Ein",false,"",SY),
-      r("Farben / Sättigung","Am Monitor oder Digitale Farbanpassung 50–70 %",false,"Geschmackssache",SY)
-    ],
-    programme:[
-      r("Sonar: Game-Klangprofil","Eigene Schritt-Kurve",false,"Selbst ein Profil bauen, welche Sounds man hören will. Maiks Profile siehe „Maiks Setup“",SW),
-      r("Sonar: Chat-Profil","Flat",false,"",SW),
-      r("Sonar: ChatMix","Ca. 70 % Spiel",false,"Nach Gefühl",SW),
-      r("Discord: Ausgabelautstärke","100 %",false,"Lauter über Sonar-Chat oder ChatMix, nicht über 100 % in Discord",SW),
-      r("Discord: Mikrofonempfindlichkeit","Automatisch oder ca. -50 bis -40 dB",false,"Zu empfindlich = andere hören Tasten und Klicks",SW),
-      r("Discord: Rauschunterdrückung / Echo","Aus bei gutem Mikro",false,"",SW),
-      r("Discord: Streamer-Modus","Automatisch mit OBS",false,"",SW),
-      r("Discord: Fenster vor Bildschirmaufnahme verstecken","An, wenn OBS den ganzen Bildschirm aufnimmt",false,"",SW),
-      r("Discord: Hardwarebeschleunigung","Aus, wenn das Spiel ruckelt",false,"Erweitert",SW),
-      r("Battle.net: Updates pausieren beim Spielen","An",false,"Sonst springt der Ping",SW),
-      r("Battle.net: Automatische Updates / Vorabinhalte","An / An",false,"",SW),
-      r("Battle.net: Beim Spielstart","In den Infobereich minimieren",false,"",SW),
-      r("Battle.net: Browser-Hardwarebeschleunigung","Aus",false,"",SW),
-      r("Battle.net: Startoption -d3d12","Bringt nichts",false,"CoD läuft sowieso mit DirectX 12. Harmlos",SW),
-      r("Spiel-Installationsort","Schnellste SSD (NVMe)",false,"",SW),
-      r("Aimlabs","5–10 Minuten vor der Runde",false,"Zum Aufwärmen, geht auch mit Controller",SW),
-      r("Controller-Abfragerate (Battle Beaver Tool)","Übertakten nur bei Bedarf",false,"Nicht übertakten, wenn der Controller schon nativ 8000 Hz hat",SW)
-    ]
-  }};
-  return fixW(prof);
-}
-
-function maikSetup(){
-  const I="ingame",SW="software",SY="system",GE="geraet";
-  const prof={id:"maik-setup",bv:2,created:2,updated:Date.now(),name:"Maiks Setup – MW4 Controller",author:"MrMaik240",game:"Call of Duty: Modern Warfare 4",plat:"PC – Controller",s:{
-    audio:[
-      r("Spiel-Gesamtlautstärke","100",true,"✅",I),
-      r("Spiel-Musiklautstärke","0",true,"✅",I),
-      r("Dialoglautstärke","6",true,"🤷 Geschmackssache, passt für Maik",I),
-      r("Effektlautstärke","100",true,"✅",I),
-      r("Filmsequenz-Musiklautstärke","0",true,"✅",I),
-      r("Audio-Mix","Kopfhörer",true,"✅",I),
-      r("Lautsprecher/Kopfhörer Soundgerät","SteelSeries Sonar – Gaming",false,"✅",I),
-      r("Lautsprecher-Ausgabe","Stereo",false,"✅",I),
-      r("Verbesserter Kopfhörermodus","Aus",false,"✅ Sonar macht den Klang",I),
-      r("Mono-Audio / Hörkompensation","Aus / Aus",true,"✅",I),
-      r("Spiel bei Minimierung stummschalten","Aus",true,"",I),
-      r("Lizenzierte Musik stummschalten","Aus",true,"🤷 Beim Streamen An schützt vor Urheberrechts-Sperren",I),
-      r("Tinnitus-Ton reduzieren","Aus",true,"⚠️ Profis: An. Pfeifen nach Explosionen überdeckt sonst Schritte",I),
-      r("Kopfschuss- & Abschusswarnungen","An",true,"✅",I),
-      r("Sprach-Chat-Lautstärke","40",true,"🤷 Reden läuft über Discord",I),
-      r("Sprach-Chat / Näherungs-Chat","An / An",true,"🤷",I),
-      r("Spielchat-Sprache","Gesamte Lobby",true,"",I),
-      r("Sprach-Chat-Wiedergabegerät","SteelSeries Sonar – Chat",false,"✅ So greift der ChatMix auch im Spiel",I),
-      r("Gerichteter Team-Chat","An",true,"",I),
-      r("Mikrofonlautstärke","100 (1x)",true,"",I),
-      r("Mikrofonmodus","Sprechtaste",true,"✅",I),
-      r("Mikrofon-Eingabegerät","Mic In (Elgato XLR Dock MK.2)",false,"",I),
-      r("Windows Standard-Ausgabe / Kommunikation","Sonar – Gaming / Sonar – Chat",false,"✅",SY),
-      r("Windows Standard-Eingabe / Kommunikation","Mic In (XLR Dock) / Chat Mix (Wave Link)",false,"✅",SY),
-      r("Audioverbesserungen + Raumklang","Aus bei jedem Gerät",false,"✅ Maiks Regel. ⚠️ INZONE E9 steht noch auf „Gerätestandardeffekte“ → Aus",SY),
-      r("Ausgabeformat Sonar-Geräte","8 Kanäle, 24 Bit, 96000 Hz",false,"✅ Immer das Beste, was das Gerät kann",SY),
-      r("Arctis: Lautstärkeausgleich","An, Freigabezeit kurz",false,"🤷 Bewusste Ausnahme, getestet. Wirkt zusätzlich zur Sonar-Kurve",SY)
-    ],
-    controller:[
-      r("Controller","Rocket Games Force X (Hall) / AimController Custom PRO PS5 (TMR)",true,"Beide mit 4 Paddles",GE),
-      r("Abzugs-Stopps L2 / R2","An (Schalter)",true,"✅",GE),
-      r("Sticks","Hall-Effect bzw. TMR",true,"AimController: links Small +2 mm, rechts High +6 mm. TMR für den Force X liegen bereit",GE),
-      r("Tastenbelegung","Standard",true,"✅ Mit Paddles",I),
-      r("Bumper-Ping / Tasten tauschen","Aus / Aus",true,"",I),
-      r("Vibration / Trigger-Effekt","Aus / Aus",true,"✅",I),
-      r("Abzug-Totzone (L2 / R2)","0 / 0",true,"✅ Passt zu den Abzugs-Stopps",I),
-      r("Stick-Empfindlichkeit horizontal / vertikal","1,55 / 1,55",true,"✅",I),
-      r("ZV-Empfindlichkeits-Multiplikator","1,00",true,"",I),
-      r("Zoom-Empfindlichkeit pro Stufe","0,90 / 0,90 / 0,85 / 0,95 / 0,95 / 0,90",true,"⚠️ Stufe 4–5x (0,85) fällt raus. Glatter: 0,90 / 0,90 / 0,90 / 0,95 / 0,95 / 0,95",I),
-      r("Zielreaktionskurve","Dynamisch",true,"✅",I),
-      r("Steigungsskalierung","0,91",true,"🤷",I),
-      r("Zielvorrichtung (ZV) / Übergangszeit","Halten / Sofort",true,"✅",I),
-      r("Zielhilfe / ZV-Anvisierhilfe","An / An",true,"✅",I),
-      r("Bewegungssensor (Gyro)","Aus",true,"✅",I),
-      r("Linker Stick Minimum / Maximum","Niedrig / 45",true,"✅ Gehört zur Taktiksprint-Hilfe: Sprint schon bei halbem Ausschlag",I),
-      r("Rechter Stick Minimum","2",true,"✅ Geht mit Hall/TMR. Zieht das Fadenkreuz von allein → 3–4",I),
-      r("Zielen-Eingabegerät (Reiter Tastatur & Maus)","Controller",false,"✅ Maiks Tipp für alle Controller-Spieler am PC",I),
-      r("Controller-Abfragerate","8000 Hz (Battle Beaver Tool)",false,"DualSense am PC per Kabel. Nicht übertakten, wenn der Controller schon nativ 8000 Hz hat",SW)
-    ],
-    mkb:[
-      r("Maus & Tastatur","Siehe Vorlage „MW4 Komplett“",false,"Maik spielt nur Controller, MnK-Werte vom Profi",I)
-    ],
-    grafik:[
-      r("Anzeigemodus","Exklusives Vollbild",false,"✅ G-Sync greift",I),
-      r("Monitor / Grafikkarte","AW2725Q / RTX 5090",false,"",I),
-      r("Bildwiederholfrequenz / Auflösung","239,99 / 3840×2160",false,"✅",I),
-      r("Hintergrund-Shader-Vorab-Laden","An",false,"✅",I),
-      r("Anzeige-Gamma","2.2 (sRGB)",false,"✅",I),
-      r("NVIDIA Reflex","An + Boost",false,"✅",I),
-      r("V-Sync (Spiel / Menüs)","Aus / Aus",false,"✅",I),
-      r("Bildratenbegrenzung im Spiel","245",false,"⚠️ Über 240 Hz schaltet G-Sync ab → 237. Oder NVIDIA-V-Sync ein, dann begrenzt Reflex selbst",I),
-      r("Bildratenbegrenzung Menü / außerhalb des Fokus","60 / 30",false,"🤷 Beim Alt-Tab sehen Zuschauer 30 FPS → 60",I),
-      r("Menü-Renderauflösung / Pause-Menü-Rendering","Optimal / Aus",false,"",I),
-      r("Qualitätsreduzierung bei Inaktivität / Fokus-Modus","Aus / 0",false,"",I),
-      r("Frame Generation","Aus (gesperrt)",false,"Gesperrt, solange die GPU-Planung in Windows fehlt",I),
-      r("Raytracing","Aus",false,"🔧 Neu (vorher Gering). Kostet viel FPS, bringt im Gefecht nichts",I),
-      r("Auflösungsskalierung / Schärfe","SMAA Nx (nativ) / 60",false,"🔧 Schärfe neu (vorher 70), weniger Flimmern an Kanten. Fehlen FPS → DLSS Qualität",I),
-      r("Variable Rate Shading","Aus, sobald einstellbar",false,"Macht Bildteile unschärfer. Bei dir gerade gesperrt, wird mit DLSS frei",I),
-      r("VRAM-Skalierungsziel","60",false,"✅",I),
-      r("Texturauflösung / Anisotrope Filterung / Details","Normal / Hoch / Normal",false,"🔧 Anisotrope Filterung neu Hoch (vorher Normal): Boden und Wände in der Ferne schärfer, kostet fast nichts",I),
-      r("Partikelauflösung","Sehr gering",false,"✅",I),
-      r("Trefferwirkung / Dauerhafte Effekte","An / Aus",false,"✅",I),
-      r("Shader-Qualität / Oberflächenqualität","Gering / Normal",false,"🔧 Oberfläche neu Normal (vorher Hoch)",I),
-      r("Textur-Streaming auf Abruf","Minimal (Cache 32, keine Limits)",false,"",I),
-      r("Lokale Textur-Streaming-Qualität / Videoqualität","Gering / Hoch",false,"",I),
-      r("Schattenqualität / Filter / Screen-Space-Schatten","Normal / Normal / Aus",false,"🔧 Neu (vorher Ultra / Hoch / Hoch). Weniger dunkle Ecken, in denen Gegner verschwinden, und mehr FPS",I),
-      r("Occlusion und Screen Space Lighting","Aus",false,"🔧 Neu (vorher Ultra). Dunkelt Ecken und Kanten ab, Gegner sind schlechter zu sehen",I),
-      r("Screen-Space-Reflexionen / Statische Reflexionen","Aus / Gering",false,"✅",I),
-      r("Geländequalität / Volumetrische Qualität","Normal / Gering",false,"🔧 Neu (vorher Sehr hoch / Hoch). Weniger Nebel, Dunst und Lichtstrahlen im Bild",I),
-      r("Verzögerte Physik / Wetter / Wasser","Aus / Gering / Aus",false,"🔧 Wetter neu Gering (vorher Normal): weniger Regen und Schnee vor der Nase",I),
-      r("Welt-Bewegungsunschärfe","Nur Zwischensequenzen",true,"✅",I),
-      r("Waffen-Bewegungsunschärfe / Tiefenschärfe","Aus / Aus",true,"✅",I),
-      r("Bildrauschen","0",true,"🔧 Neu (vorher 0,25). Filmkorn-Effekt, macht das Bild nur körnig",I),
-      r("Sichtfeld (FOV) / Erweitertes Sichtfeld","110 / Aus",true,"✅",I),
-      r("Zielvorrichtungs-Sichtfeld","Beeinflusst",true,"✅",I),
-      r("Externe Ansicht / Fahrzeug-Sichtfeld","90 / Breit",true,"🤷 Third-Person eher 100–110",I),
-      r("Kamerabewegung (Ego / extern)","Minimal (25 %) / Minimal (25 %)",true,"✅",I),
-      r("Invertierte Blendgranate","Aus",true,"",I)
-    ],
-    gameplay:[
-      r("Sprinten / Taktiksprint","Umschalten / Doppelt tippen",true,"✅",I),
-      r("Sprint-Hilfe","Taktiksprint-Hilfe, Verzögerung 5",true,"✅ Zusammen mit linkem Stick Max 45",I),
-      r("Rutschen / Verzögerung / Kampfrolle","Tippen / Kurz / Doppelt tippen",true,"✅",I),
-      r("Sprint bleibt nach Rutschen erhalten","Aus",true,"🤷",I),
-      r("Klettern-Hilfe / Am Boden / Türspaltblick","Aus / Aus / Aus",true,"✅",I),
-      r("Eckenblick","An",true,"🤷",I),
-      r("Fahrzeug: Kamera / Blick / Hinauslehnen","Kurze Verzögerung / Freier Blick / Nahkampf",true,"",I),
-      r("Waffenstütze-Aktivierung","Aus",true,"⚠️ Profis: ZV + Nahkampf (weniger Rückstoß an Kanten)",I),
-      r("Waffenstütze-Bewegung / verlassen","An / Sofort, Ansicht: kurze Verzögerung",true,"Wirkt erst mit aktivierter Waffenstütze",I),
-      r("'Zoom ändern'-Aktivierung","Sprinten/Taktiksprint/Fokussieren",true,"✅",I),
-      r("Alternativer Ausrüstungswurf","Nahkampf",true,"✅",I),
-      r("Dedizierte Nahkampfwaffe","Nahkampf-Taste halten",true,"✅",I),
-      r("Panzerplattenverhalten / C4","Alle anwenden / Nacheinander",true,"✅",I),
-      r("Ausrüstungs- / Manuellfeuer-Verhalten","Halten / Halten",true,"✅",I),
-      r("Fokus-Verhalten","Halten",true,"✅",I),
-      r("Interagieren/Nachladen-Verhalten","Priorisiere Interagieren",true,"✅",I),
-      r("Klettern / Taktiksprint bricht Nachladen ab","Aus / Aus",true,"✅",I),
-      r("Automatischer Waffenwechsel wenn leer","An",true,"🤷",I),
-      r("Akimbo / ZV-Stick-Tausch","Unabhängig / Aus",true,"✅",I),
-      r("Inventar / Ping-Rad / Gefahren-Ping","Richtungstasten / Mittel / Kurz",true,"",I),
-      r("Punkteübersicht/Karte","Umschalten",true,"",I),
-      r("HUD-Grenzen","So klein wie möglich",true,"✅ Maiks Tipp: weniger Augen- und Kopfbewegung",I),
-      r("HUD-Widget-Rütteln","Aus",true,"✅",I),
-      r("Minikarte-Form / Rotation / Radar","Quadratisch / An / Aus",true,"✅",I),
-      r("Kompass / Ausdauerleiste","An / An",true,"",I),
-      r("Spielernamen / Abschuss-Feed","Vollständig / Standard",true,"",I),
-      r("Fadenkreuz","Statisch, Punkt an, am größten, Deckkraft 100",true,"✅",I),
-      r("Fadenkreuzfarbe","Magenta FF00C3",true,"✅",I),
-      r("Treffermarkierungen / schadensbasiert","An / An",true,"✅",I),
-      r("Widgets (Waffe / Ausrüstung)","100 / 100",true,"",I),
-      r("Menü-Hinweise / Spieltipps","Automatisch / An",true,"🤷 Spieltipps kann man aus machen",I),
-      r("Abschusskamera überspringen / Kurzinfo","Aus / Aus",true,"",I),
-      r("Telemetrie","Das Notwendigste: FPS, Ping, Paketverlust, GPU-Temperatur, Uhr",false,"✅",I),
-      r("Netzwerk- / Hardware-Alarmsymbole","An / An",false,"✅",I),
-      r("Bewegungskrankheit / Horizontale Linie","Aus / Aus",true,"✅",I),
-      r("HUD-Farbpalette","Eigene: Du Gelb, Team Blau, Party Grün, Feind Rot, Neutral Magenta, Umkämpft Gelb",true,"✅",I),
-      r("Farbfilter / Ziel","Filter 2 / Beide",true,"✅ Profi-Tipp",I),
-      r("Welt- / Interface-Farbintensität","100 / 100",true,"✅",I),
-      r("Einstellungen in Cloud speichern","An",true,"✅",I),
-      r("Text-Chat-Filter / Abschuss- & Leichen-Effekte","An / An",true,"",I),
-      r("Party / Freundschaft / Flüstern","Offen / Offen / Offen",true,"🤷 Beim Streamen evtl. Freundschaftsanfragen auf „Chat-Kanäle“",I)
-    ],
-    system:[
-      r("Monitor","AW2725Q, 3840×2160 bei 239,99 Hz, 10 Bit, RGB",false,"✅",SY),
-      r("Dynamische Aktualisierungsrate / HDR","Aus / Aus",false,"✅ / 🤷",SY),
-      r("Hardwarebeschleunigte GPU-Planung","Noch prüfen → An",false,"⚠️ Sonst bleibt Frame Generation im Spiel gesperrt",SY),
-      r("Optimierungen für Spiele im Fenstermodus","Aus",false,"⚠️ Einschalten, allgemein und bei CoD. Weniger Verzögerung beim Alt-Tab",SY),
-      r("CoD-Grafikeinstellung","Höchstleistung (RTX 5090)",false,"✅",SY),
-      r("Spielmodus / Energiemodus","An / Beste Leistung",false,"✅",SY),
-      r("Game Bar Controller / Guide-Taste / Aufzeichnungen","Aus / Aus / Aus",false,"✅",SY),
-      r("Bildschirm aus nach","5 Minuten",false,"✅ Gut gegen Einbrennen beim OLED",SY),
-      r("Autostart","Nur das Nötigste",false,"✅ Maiks Tipp",SY),
-      r("NVIDIA: Ausgabe","10 bpc, RGB, Dynamischer Bereich Voll",false,"✅",SY),
-      r("NVIDIA: G-SYNC","An, nur Vollbildmodus",false,"✅ Passt, weil exklusives Vollbild",SY),
-      r("NVIDIA: Vertikale Synchronisierung","Aus",false,"⚠️ Mit G-Sync: Ein (im Spiel aus, Reflex an). Oder Bildrate auf 237",SY),
-      r("NVIDIA: Energieverwaltung / Aktualisierungsrate","Maximale Leistung / Höchste verfügbar",false,"✅",SY),
-      r("NVIDIA: Geringe Latenz / Dreifach-Puffer / Threaded","Aus / Aus / Ein",false,"✅",SY),
-      r("NVIDIA: Kantenglättung / Anisotrope Filterung","Aus",false,"Egal bei DirectX 12, das Spiel regelt das",SY),
-      r("NVIDIA: Farben","50 / 50 / 1,00, Farbanpassung 50 %",false,"Farben macht Maik am Monitor",SY)
-    ],
-    programme:[
-      r("Sonar Game","Tournament → Arctis 100 %",false,"In SteelSeries GG übernehmen: "+sonarLinks("game"),SW),
-      r("Sonar Chat","Flat → Arctis 100 %",false,"In SteelSeries GG übernehmen: "+sonarLinks("chat"),SW),
-      r("Sonar Medien","Media → Lautsprecher 6 %",false,"In SteelSeries GG übernehmen: "+sonarLinks("medien"),SW),
-      r("Sonar Aux","Music → Lautsprecher 6 %",false,"In SteelSeries GG übernehmen: "+sonarLinks("aux"),SW),
-      r("Sonar Mikro","Less Nasal, kein Gerät zugewiesen",false,"✅ Gewollt, das Mikro läuft über Wave Link. In SteelSeries GG übernehmen: "+sonarLinks("mikro"),SW),
-      r("ChatMix","71–73 % Spiel",false,"Über das Stream Deck",SW),
-      r("Discord: Eingabe / Ausgabe","Chat Mix (Wave Link) 100 % / Sonar Chat",false,"✅",SW),
-      r("Discord: Ausgabelautstärke","169 %",false,"⚠️ Über 100 % übersteuert leise Kollegen → 100 %, lauter über Sonar",SW),
-      r("Discord: Mikrofonempfindlichkeit","Manuell -68 dB",false,"⚠️ Sehr empfindlich, Mikro fast immer offen → -50 bis -40 dB (außer Wave Link hat ein Rauschtor)",SW),
-      r("Discord: Krisp / Echo-Unterdrückung","Aus / Aus",false,"✅",SW),
-      r("Discord: Push-to-Talk","Aus",false,"🤷",SW),
-      r("Discord: Stream-Dämpfung / Neue Aufnahme","An 49 % / An",false,"✅",SW),
-      r("Discord: Streamer-Modus","Automatisch mit OBS",false,"✅",SW),
-      r("Discord: Fenster vor Bildschirmaufnahme verstecken","Aus",false,"🤷 An, wenn OBS den ganzen Bildschirm aufnimmt",SW),
-      r("Discord: Benachrichtigungen","Fast alle Töne an, Handy 10 Min., TTS nie",false,"🤷 Für Ranked: Zuschauer- und Aktivitäts-Töne aus",SW),
-      r("Battle.net: Updates pausieren beim Spielen","An",false,"✅",SW),
-      r("Battle.net: Automatische Updates / Vorabinhalte","An / An",false,"✅",SW),
-      r("Battle.net: Download-Limit","3.000.000 KB/s (praktisch keins)",false,"✅",SW),
-      r("Battle.net: Startoption","-d3d12",false,"🤷 Wirkungslos, aber harmlos",SW),
-      r("Battle.net: Beim Spielstart / Browser-Beschleunigung","Minimieren / Aus",false,"➕ Empfehlung",SW),
-      r("Aimlabs","Kurz vor der Runde",false,"Nur zum Aufwärmen",SW)
-    ]
-  }};
-  return fixW(prof);
-}
-
-const BUILTINS={"mw4-komplett":{v:2,make:sample},"maik-setup":{v:2,make:maikSetup}};
-function upgradeBuiltins(list){
-  state.bv=state.bv||{};
-  Object.entries(BUILTINS).forEach(([id,b])=>{
-    if((state.bv[id]||0)>=b.v)return;
-    const fresh=b.make(), i=list.findIndex(p=>p.id===id);
-    if(i>=0)list[i]=fresh; else list.push(fresh);
-    delete state.checks[id]; dirty.add(id); state.bv[id]=b.v;
-  });
-  return list;
-}
-
-const LS="setup-vault-v1";
-let state={profiles:[],cur:null,view:"home",game:null,mode:"view",consoleOnly:false,checks:{},extraGames:[],synced:false,pending:[]};
-const dirty=new Set();
-function load(){
-  try{const raw=localStorage.getItem(LS); if(raw){const d=JSON.parse(raw); if(d&&d.profiles&&d.profiles.length)Object.assign(state,d);}}catch(e){}
-  state.checks=state.checks||{};
-  upgradeBuiltins(state.profiles);
-  if(!state.cur||!state.profiles.some(p=>p.id===state.cur))state.cur=state.profiles[0].id;
-  state.profiles.forEach(fixW);
-  if(!WHERE[state.wf])state.wf=null;
-  if(!["view","edit","guide"].includes(state.mode))state.mode="view";
-  if(!["home","game","profile"].includes(state.view))state.view="home";
-  state.extraGames=state.extraGames||[];
-  (state.pending||[]).forEach(id=>dirty.add(id));
-}
-function saveLocal(){state.pending=[...dirty];try{localStorage.setItem(LS,JSON.stringify(state))}catch(e){}}
-function save(pid){if(pid!==false)queue(pid||cur()?.id);else saveLocal();}
-
-/* ---------- Geräte-Sync über den Setup-Vault-Server auf deinem PC ---------- */
-let col=null, flushTimer=null, writing=false, backoff=2000, firstSnap=true, needRender=false;
-function setStatus(kind){
-  const el=$("sync"), map={
-    local:["Nur dieses Gerät","Starte Setup Vault über start.bat, damit PC und Handy gleich sind."],
-    connecting:["Verbinde…",""],
-    ok:["PC & Handy synchron","Alle Geräte im WLAN sehen dieselben Profile. Gespeichert auf deinem PC."],
-    saving:["Speichert…",""],
-    offline:["PC nicht erreichbar","Änderungen sind auf diesem Gerät gesichert und werden übertragen, sobald der PC wieder erreichbar ist (Setup Vault läuft, gleiches WLAN)."],
-    solo:["Nur dieses Gerät","Setup Vault läuft ohne PC. Deine Profile sind auf diesem Handy gespeichert. Mit anderen teilst du sie über den Code."],
-    full:["Speicher voll","Lösche alte Profile, dann wird wieder abgeglichen."]
-  }[kind];
-  el.dataset.s=kind; el.querySelector("span").textContent=map[0]; el.title=map[1];
-  const m=document.getElementById("syncM"); if(m){m.dataset.s=kind;m.querySelector("span").textContent=map[0];}
-  window.__sync=kind;
-}
-function queue(pid){
-  if(pid)dirty.add(pid);
-  saveLocal();
-  if(!col)return;
-  setStatus("saving");
-  clearTimeout(flushTimer); flushTimer=setTimeout(flush,700);
-}
-function toDoc(p){
-  return {name:p.name||"",author:p.author||"",game:p.game||"",plat:p.plat||"",created:p.created||Date.now(),updated:p.updated||Date.now(),s:p.s||{},checks:state.checks[p.id]||{}};
-}
-async function flush(){
-  if(!col||writing)return;
-  writing=true;
-  try{
-    while(dirty.size){
-      const pid=dirty.values().next().value;
-      const p=state.profiles.find(x=>x.id===pid);
-      try{
-        if(p) await col.doc(pid).set(toDoc(p)); else await col.doc(pid).delete();
-        dirty.delete(pid); backoff=2000;
-      }catch(e){
-        const code=e&&e.code;
-        if(code==="quota_exceeded"){setStatus("full");saveLocal();return;}
-        if(code==="invalid_argument"||code==="revoked"||code==="not_granted"||code==="capability_disabled"){col=null;setStatus("local");saveLocal();return;}
-        setStatus("offline"); saveLocal(); col=null;
-        clearTimeout(reconnectTimer); reconnectTimer=setTimeout(connect, backoff+Math.random()*1000); backoff=Math.min(backoff*2,60000);
-        return;
-      }
-    }
-    setStatus("ok");
-  }finally{writing=false; saveLocal();}
-}
-function isTyping(){
-  const a=document.activeElement;
-  return a && (a.tagName==="TEXTAREA" || (a.tagName==="INPUT" && a.type!=="checkbox") || a.tagName==="SELECT") && !a.closest(".dlg");
-}
-function applyCloud(snap){
-  const cloud=new Map();
-  snap.docs.forEach(d=>{const b=d.data(); if(b&&b.s)cloud.set(d.id,b);});
-  if(firstSnap){
-    firstSnap=false;
-    if(!state.synced){
-      state.profiles.forEach(p=>{ if(cloud.has(p.id))return; if(BUILTINS[p.id]&&cloud.size&&!dirty.has(p.id))return; dirty.add(p.id); });
-      state.synced=true;
-    }
-  }
-  const next=[];
-  cloud.forEach((b,id)=>{
-    if(dirty.has(id)){const local=state.profiles.find(p=>p.id===id); if(local)next.push(local); return;}
-    next.push(fixW({id,name:b.name,author:b.author,game:b.game,plat:b.plat,created:b.created,updated:b.updated,s:JSON.parse(JSON.stringify(b.s))}));
-    state.checks[id]=JSON.parse(JSON.stringify(b.checks||{}));
-  });
-  state.profiles.forEach(p=>{ if(dirty.has(p.id)&&!cloud.has(p.id))next.push(p); });
-  upgradeBuiltins(next);
-  next.sort((a,b)=>(a.created||0)-(b.created||0));
-  if(!next.length){ const p=sample(); next.push(p); dirty.add(p.id); }
-  state.profiles=next;
-  if(!next.some(p=>p.id===state.cur)){state.cur=next[0].id; if(state.view==="profile")state.view="game";}
-  saveLocal();
-  if(isTyping())needRender=true; else render();
-  if(dirty.size){setStatus("saving");flush();} else setStatus("ok");
-}
-/* Verbindung zum Setup-Vault-Server auf deinem PC */
-function makeCol(){
-  const req=async(method,id,body)=>{
-    const r=await fetch("api/profiles/"+encodeURIComponent(id),{method,headers:{"Content-Type":"application/json"},body:body?JSON.stringify(body):undefined});
-    if(!r.ok)throw {code:r.status===413?"quota_exceeded":"unavailable"};
-  };
-  return {doc:id=>({set:d=>req("PUT",id,d),delete:()=>req("DELETE",id)})};
-}
-let lastVersion=-1, es=null, reconnectTimer=null;
-async function pull(){
-  const r=await fetch("api/profiles",{cache:"no-store"});
-  if(r.status===404||!(r.headers.get("content-type")||"").includes("json"))throw {standalone:true};
-  if(!r.ok)throw new Error("Server antwortet nicht");
-  const d=await r.json();
-  lastVersion=d.version;
-  applyCloud({docs:Object.entries(d.profiles||{}).map(([id,b])=>({id,data:()=>b}))});
-}
-async function connect(){
-  const goSolo=()=>{col=null;document.documentElement.classList.add("solo");setStatus("solo");};
-  /* Im Internet (GitHub, Netlify …) gibt es keinen PC-Server: sofort „Nur dieses Gerät“, auch ohne Internet */
-  const h=location.hostname, local=/^(localhost|127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)|\.local$/.test(h);
-  if(location.protocol==="file:"||!local){goSolo();return;}
-  let seen=false;try{seen=localStorage.getItem("sv-server")==="1"}catch(e){}
-  if(seen)setStatus("connecting");
-  try{await pull(); document.documentElement.classList.remove("solo"); col=makeCol(); if(dirty.size)flush(); try{localStorage.setItem("sv-server","1")}catch(e){}}
-  catch(e){if((e&&e.standalone)||!seen){goSolo();if(!(e&&e.standalone)){clearTimeout(reconnectTimer);reconnectTimer=setTimeout(connect,15000);}return;}col=null;setStatus("offline");clearTimeout(reconnectTimer);reconnectTimer=setTimeout(connect,5000);return;}
-  if(es)es.close();
-  es=new EventSource("api/events");
-  es.onmessage=ev=>{try{const v=JSON.parse(ev.data).version; if(v!==lastVersion&&!writing&&!dirty.size)pull().catch(()=>{});}catch(e){}};
-  es.onerror=()=>{es.close();es=null;col=null;setStatus("offline");clearTimeout(reconnectTimer);reconnectTimer=setTimeout(connect,4000);};
-}
-document.addEventListener("focusout",()=>setTimeout(()=>{if(needRender&&!isTyping()){needRender=false;render();}},150));
-
-/* ---------- Helfer ---------- */
-const $=id=>document.getElementById(id);
-const cur=()=>state.profiles.find(p=>p.id===state.cur)||state.profiles[0];
-const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-function hue(name){let h=0;for(const c of String(name))h=(h*31+c.charCodeAt(0))%360;return (h+200)%360}
-function initials(name){
-  const w=String(name).replace(/[:–-]/g," ").split(/\s+/).filter(Boolean);
-  const caps=w.filter(x=>/^[A-Z0-9]/.test(x)).map(x=>x[0]).join("");
-  return (caps.length>=2?caps:w.map(x=>x[0]).join("")).slice(0,3).toUpperCase()||"?";
-}
-function games(){
-  const m=new Map();
-  state.extraGames.forEach(g=>m.set(g,[]));
-  state.profiles.forEach(p=>{const g=p.game||"Ohne Spiel";if(!m.has(g))m.set(g,[]);m.get(g).push(p);});
-  return [...m.entries()].map(([name,list])=>({name,list,h:hue(name),updated:Math.max(0,...list.map(p=>p.updated||0))}));
-}
-function counts(p){
-  let all=0,con=0;SECTIONS.forEach(s=>(p.s[s.key]||[]).forEach(x=>{all++;if(x.all)con++;}));return {all,con};
-}
-function ago(t){
-  if(!t)return "";const d=(Date.now()-t)/1000;
-  if(d<60)return "gerade eben";if(d<3600)return `vor ${Math.floor(d/60)} Min.`;if(d<86400)return `vor ${Math.floor(d/3600)} Std.`;
-  const n=Math.floor(d/86400);return n===1?"gestern":`vor ${n} Tagen`;
-}
-function toast(t){const el=$("toast");el.textContent=t;el.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>el.hidden=true,1900)}
-function go(view,extra={}){Object.assign(state,{view},extra);save(false);render();window.scrollTo(0,0);}
-
-/* ---------- Ansichten ---------- */
-function syncChip(){const k=window.__sync||"local";return `<span class="sync" id="syncM" data-s="${k}"><i></i><span>${$("sync").querySelector("span").textContent}</span></span>`}
-function mobileTop(){
-  return `<div class="mtop"><button class="logo" data-go="home" aria-label="Zur Bibliothek">
-    <img src="icon-64.png" width="32" height="32" alt="" style="border-radius:8px">
-    <span><b>Setup Vault</b></span></button>${syncChip()}</div>`;
-}
-function viewHome(){
-  const gs=games();
-  const recent=[...state.profiles].sort((a,b)=>(b.updated||0)-(a.updated||0)).slice(0,5);
-  return `${mobileTop()}
-  <div class="pagehead"><div><h1>Deine Bibliothek</h1><p>${gs.length} ${gs.length===1?"Spiel":"Spiele"} · ${state.profiles.length} ${state.profiles.length===1?"Profil":"Profile"}</p></div>
-  <div class="headact"><button class="btn" data-act="phone">Handy verbinden</button><button class="btn" data-act="import">Code einfügen</button><button class="btn primary" data-act="newgame">+ Spiel</button></div></div>
-  <div class="grid">
-    ${gs.map(g=>`<button class="game" style="--h:${g.h}" data-game="${esc(g.name)}"><span class="ini">${esc(initials(g.name))}</span><b>${esc(g.name)}</b><small>${g.list.length} ${g.list.length===1?"Profil":"Profile"}${g.updated?" · "+ago(g.updated):""}</small></button>`).join("")}
-    <button class="addcard" data-act="newgame"><span class="plus">+</span>Spiel hinzufügen</button>
-  </div>
-  <h2 class="sec">Zuletzt bearbeitet</h2>
-  <div class="recent">${recent.map(p=>`<button data-prof="${p.id}" style="--h:${hue(p.game||"Ohne Spiel")}"><span class="dot"></span><span><b>${esc(p.name)}</b><br><small>${esc(p.game||"Ohne Spiel")}</small></span><span class="meta2">${ago(p.updated)}</span></button>`).join("")}</div>`;
-}
-function profileCard(p){
-  const c=counts(p),pct=c.all?Math.round(c.con/c.all*100):0;
-  return `<button class="pcard" data-prof="${p.id}">
-    <div class="t"><div><b>${esc(p.name)}</b><div class="by">${p.author?"von "+esc(p.author):"&nbsp;"}</div></div><span class="chip">${esc(p.plat||"")}</span></div>
-    <div class="split"><div class="bar" aria-hidden="true"><i style="width:${pct}%"></i></div>
-    <div class="lg"><span style="color:var(--ok)">${c.con} auf Konsole</span><span style="color:var(--pc)">${c.all-c.con} nur PC</span></div></div>
-  </button>`;
-}
-function viewGame(){
-  const g=games().find(x=>x.name===state.game)||games()[0];
-  if(!g)return viewHome();
-  state.game=g.name;
-  return `${mobileTop()}
-  <nav class="crumb"><button data-go="home">Bibliothek</button><span class="sep">›</span><span>${esc(g.name)}</span></nav>
-  <div class="pagehead"><div><h1>${esc(g.name)}</h1><p>${g.list.length} ${g.list.length===1?"Profil":"Profile"}</p></div>
-  <div class="headact">${g.list.length?"":`<button class="btn ghost danger" data-act="rmgame">Spiel entfernen</button>`}<button class="btn" data-act="import">Code einfügen</button><button class="btn primary" data-act="newprof">+ Neues Profil</button></div></div>
-  <div class="pgrid">
-    ${g.list.map(profileCard).join("")}
-    <button class="addcard" data-act="newprof"><span class="plus">+</span>Neues Profil</button>
-  </div>`;
-}
-function visibleRows(p,key,noW){let list=p.s[key]||[];if(state.consoleOnly)list=list.filter(x=>x.all);if(state.wf&&!noW)list=list.filter(x=>(x.w||"ingame")===state.wf);return list;}
-function viewProfile(){
-  const p=cur(); if(!p)return viewHome();
-  const h=hue(p.game||"Ohne Spiel"), c=counts(p), pct=c.all?Math.round(c.con/c.all*100):0;
-  const mode=state.mode, ck=state.checks[p.id]||{};
-  let total=0,done=0;SECTIONS.forEach(s=>visibleRows(p,s.key).forEach(x=>{total++;if(ck[x.id])done++;}));
-  const secsAll=SECTIONS.filter(s=>(mode==="edit"&&!state.wf)||visibleRows(p,s.key).length);
-  if(state.sec&&!secsAll.some(s=>s.key===state.sec))state.sec=null;
-  const secs=secsAll.filter(s=>!state.sec||s.key===state.sec);
-  const gameOpts=[...new Set(games().map(g=>g.name).concat(p.game||""))].filter(Boolean);
-  return `${mobileTop()}
-  <nav class="crumb"><button data-go="home">Bibliothek</button><span class="sep">›</span><button data-game="${esc(p.game||"Ohne Spiel")}">${esc(p.game||"Ohne Spiel")}</button><span class="sep">›</span><span>${esc(p.name)}</span></nav>
-  <section class="phero" style="--h:${h}">
-    <div>
-      <h1>${esc(p.name)}</h1>
-      <div class="sub"><span class="chip">${esc(p.plat||"")}</span>${p.author?`<span>von ${esc(p.author)}</span>`:""}<span>· ${ago(p.updated)}</span></div>
-    </div>
-    <div class="stat">
-      <p>Auf PlayStation / Xbox übertragbar</p>
-      <b>${c.con}<span> von ${c.all} Einstellungen</span></b>
-      <div class="split" style="margin-top:8px"><div class="bar"><i style="width:${pct}%"></i></div></div>
-    </div>
-    <div class="actbar">
-      <div class="seg" role="group" aria-label="Ansicht">
-        <button data-mode="view" aria-pressed="${mode==="view"}">Ansehen</button>
-        <button data-mode="guide" aria-pressed="${mode==="guide"}">Abhaken</button>
-        <button data-mode="edit" aria-pressed="${mode==="edit"}">Bearbeiten</button>
+      <h1>Dein Setup.<br><span>Abgehakt.</span></h1>
+      <p class="lead">Alle Einstellungen für Call of Duty in einer App: Controller, Grafik, Audio und PC. Profi-Werte übernehmen, Schritt für Schritt abhaken und per Code mit Freunden teilen.</p>
+      <ul class="chips">
+        <li>Kostenlos</li><li>Ohne Konto</li><li>Läuft offline</li><li>Android · iPhone · PC</li>
+      </ul>
+      <div class="cta">
+        <a class="btn main" href="#download" id="mainBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
+          <span>Jetzt holen</span>
+        </a>
+        <a class="btn" href="app/">Im Browser ausprobieren</a>
       </div>
-      <div class="headact">
-        <label class="toggle"><input type="checkbox" id="consoleOnly" ${state.consoleOnly?"checked":""}>Nur Konsole</label>
-        <button class="btn primary" data-act="share">Teilen</button>
+    </div>
+    <div class="phone"><img src="screen.jpg" alt="Setup Vault auf dem Handy: Maiks Setup zum Abhaken" width="390" height="780"></div>
+  </div>
+
+  <section id="download">
+    <h2>Download</h2>
+    <p class="sub">Wähl dein Gerät. Dein Gerät ist schon markiert.</p>
+    <div class="dl">
+      <div class="card android" id="c-android">
+        <span class="tag">Dein Gerät</span>
+        <div class="ic"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.6 9.48l1.84-3.18a.38.38 0 0 0-.66-.38l-1.86 3.22a11.4 11.4 0 0 0-9.84 0L5.22 5.92a.38.38 0 0 0-.66.38L6.4 9.48A10.8 10.8 0 0 0 1 18h22a10.8 10.8 0 0 0-5.4-8.52zM7 15.25a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5zm10 0a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5z"/></svg></div>
+        <h3>Android</h3>
+        <p class="meta">App (APK) · Android 7 oder neuer · ca. 1 MB</p>
+        <ol>
+          <li>Unten auf <b>APK herunterladen</b> tippen</li>
+          <li>Datei öffnen → <b>Installieren</b></li>
+          <li>Fragt das Handy nach „Unbekannte Apps“: für den Browser erlauben</li>
+          <li>Warnt Play Protect: <b>Trotzdem installieren</b></li>
+        </ol>
+        <a class="btn fill" href="SetupVault.apk" download data-goatcounter-click="download-android" data-goatcounter-title="Download Android-APK">APK herunterladen</a>
+      </div>
+
+      <div class="card ios" id="c-ios">
+        <span class="tag">Dein Gerät</span>
+        <div class="ic"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.4 12.6c0-2.3 1.9-3.4 2-3.5a4.3 4.3 0 0 0-3.4-1.8c-1.4-.1-2.8.9-3.5.9s-1.8-.9-3-.8a4.5 4.5 0 0 0-3.8 2.3c-1.6 2.8-.4 7 1.2 9.3.8 1.1 1.7 2.4 2.9 2.3 1.2 0 1.6-.7 3-.7s1.8.7 3 .7 2-1.1 2.8-2.3a9.6 9.6 0 0 0 1.3-2.6 3.9 3.9 0 0 1-2.5-3.8zM14.1 5.8A4 4 0 0 0 15 2.9a4.1 4.1 0 0 0-2.7 1.4 3.8 3.8 0 0 0-1 2.8 3.4 3.4 0 0 0 2.8-1.3z"/></svg></div>
+        <h3>iPhone</h3>
+        <p class="meta">Web-App · direkt aus Safari</p>
+        <ol>
+          <li>Diese Seite in <b>Safari</b> öffnen und unten auf <b>App öffnen</b> tippen</li>
+          <li>In der App unten auf <b>Teilen</b> tippen (Viereck mit Pfeil)</li>
+          <li><b>„Zum Home-Bildschirm“</b> wählen</li>
+          <li>Fertig: App-Symbol auf dem Startbildschirm, läuft auch offline</li>
+        </ol>
+        <a class="btn fill" href="app/" data-goatcounter-click="open-iphone" data-goatcounter-title="iPhone: App öffnen">App öffnen</a>
+      </div>
+
+      <div class="card pcc" id="c-pc">
+        <span class="tag">Dein Gerät</span>
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></div>
+        <h3>PC</h3>
+        <p class="meta">Windows · mit Abgleich zum Handy übers WLAN</p>
+        <ol>
+          <li>Einfach so: auf <b>Im Browser öffnen</b> klicken</li>
+          <li>Mit Handy-Abgleich: ZIP laden, entpacken, <b>start.bat</b> starten (braucht Node.js)</li>
+          <li>Anleitung liegt in der ZIP</li>
+        </ol>
+        <div style="display:grid;gap:8px;margin-top:auto">
+          <a class="btn fill" href="app/" style="margin-top:0">Im Browser öffnen</a>
+          <a class="btn" href="Setup-Vault-PC.zip" download style="margin-top:0" data-goatcounter-click="download-pc" data-goatcounter-title="Download PC-ZIP">PC-Version (ZIP)</a>
+        </div>
       </div>
     </div>
   </section>
 
-  <div class="sticky">
-    <div class="jump" role="group" aria-label="Bereich"><button data-secf="" aria-pressed="${!state.sec}">Alle<span class="cnt">${secsAll.reduce((a,s)=>a+visibleRows(p,s.key).length,0)}</span></button>${secsAll.map(s=>`<button data-secf="${s.key}" aria-pressed="${state.sec===s.key}">${s.name}<span class="cnt">${visibleRows(p,s.key).length}</span></button>`).join("")}</div>
-    <div class="wfilter" role="group" aria-label="Wo einstellen"><span class="lab">Wo einstellen</span>${WORDER.map(w=>{const n=SECTIONS.reduce((a,s)=>a+visibleRows(p,s.key,true).filter(x=>(x.w||"ingame")===w).length,0);return `<button data-wf="${w}" style="--wc:var(--w-${w})" aria-pressed="${state.wf===w}" title="${WHERE[w].long}" ${n||state.wf===w?"":"disabled"}>${WHERE[w].ic}${WHERE[w].name}<span class="cnt">${n}</span></button>`}).join("")}</div>
-    ${mode==="guide"?`<div class="guidebar"><div class="progress"><i style="width:${total?done/total*100:0}%"></i></div><span>${done} / ${total} erledigt</span>${done?`<button class="btn small ghost" data-act="resetchecks">Zurücksetzen</button>`:""}</div>`:""}
-  </div>
+  <section>
+    <h2>Was drin ist</h2>
+    <p class="sub">Zwei fertige Profile für Modern Warfare 4. Eigene Profile für jedes Spiel kannst du selbst anlegen.</p>
+    <div class="feat">
+      <div><b>Maiks Setup</b><p>Mein komplettes Controller-Setup mit Bewertung: ✅ passt, ⚠️ ändern, 🤷 Geschmackssache.</p></div>
+      <div><b>Vorlage für alle</b><p>Profi-Werte für Controller, Maus &amp; Tastatur, Grafik, Audio, Windows und Programme wie Discord.</p></div>
+      <div><b>Wo einstellen?</b><p>Jede Einstellung zeigt, wo sie hingehört: im Spiel, Windows, Software, Konsole oder am Controller.</p></div>
+      <div><b>Abhaken</b><p>Einstellung für Einstellung durchgehen und abhaken, bis alles sitzt.</p></div>
+      <div><b>Nur Konsole</b><p>Filter für alles, was auf PlayStation und Xbox genauso geht.</p></div>
+      <div><b>Teilen per Code</b><p>Profil als Code per WhatsApp oder Discord schicken, der andere fügt ihn einfach ein.</p></div>
+    </div>
+  </section>
 
-  ${mode==="edit"?`<div class="metaedit">
-    <label>Profilname<input id="mName" value="${esc(p.name)}"></label>
-    <label>Erstellt von<input id="mAuthor" value="${esc(p.author||"")}"></label>
-    <label>Spiel<select id="mGame">${gameOpts.map(g=>`<option ${g===p.game?"selected":""}>${esc(g)}</option>`).join("")}</select></label>
-    <label>Gespielt auf<select id="mPlat">${PLATS.map(x=>`<option ${x===p.plat?"selected":""}>${x}</option>`).join("")}</select></label>
-  </div>`:""}
+  <section>
+    <h2>Fragen</h2>
+    <details><summary>Warum warnt Android bei der Installation?</summary><p>Die App kommt nicht aus dem Play Store. Deshalb fragt Android nach und Play Protect kennt den Entwickler nicht. Die App braucht keine Berechtigungen außer Internet und liest nichts von deinem Handy.</p></details>
+    <details><summary>Kostet das was oder brauche ich ein Konto?</summary><p>Nein. Kein Konto, keine Werbung, kein Abo. Deine Profile bleiben nur auf deinem Gerät.</p></details>
+    <details><summary>Warum keine App im App Store?</summary><p>Dafür verlangt Apple eine jährliche Gebühr. Die Web-App aus Safari kann für diesen Zweck dasselbe: eigenes Symbol, läuft offline, speichert auf dem iPhone.</p></details>
+    <details><summary>Wie bekomme ich Updates?</summary><p>iPhone und Browser: automatisch beim nächsten Öffnen. Android: neue APK von dieser Seite einfach über die alte installieren, deine Profile bleiben.</p></details>
+  </section>
 
-  <div class="sections ${secs.length===1?"one":""}">${secs.map(s=>sectionCard(p,s,mode,ck)).join("")||`<div class="scard"><div class="empty">${state.consoleOnly?"Dieses Profil hat nichts, was auf Konsole übertragbar ist.":"Noch keine Einstellungen. Wechsle zu „Bearbeiten“."}</div></div>`}</div>
-
-  ${mode==="edit"?`<div class="dangerzone"><button class="btn ghost" data-act="dup">Kopie anlegen</button><button class="btn ghost danger" data-act="del">Profil löschen</button></div>`:""}`;
-}
-function sectionCard(p,s,mode,ck){
-  const rows=visibleRows(p,s.key), all=(p.s[s.key]||[]), con=all.filter(x=>x.all).length;
-  let body="";
-  if(mode==="edit"){
-    body=rows.map(x=>`<li class="ed" data-sec="${s.key}" data-id="${x.id}">
-      <textarea class="lbl" rows="1" aria-label="Einstellung" placeholder="Einstellung">${esc(x.label)}</textarea>
-      <textarea class="val" rows="1" aria-label="Wert" placeholder="Wert">${esc(x.value)}</textarea>
-      <div class="tools"><button class="wbtn" style="--wc:var(--w-${x.w||"ingame"})" title="Wo einstellen? Antippen zum Wechseln">${WHERE[x.w||"ingame"].ic}${WHERE[x.w||"ingame"].name}</button><button class="tag ${x.all?"all":"pc"}" title="Antippen: auf Konsole übertragbar oder nur PC">${x.all?"ALLE":"NUR PC"}</button><button class="x" aria-label="Entfernen">×</button></div>
-      <textarea class="note" rows="1" aria-label="Notiz" placeholder="Notiz (optional)">${esc(x.note)}</textarea>
-    </li>`).join("");
-  }else if(mode==="guide"){
-    body=rows.map(x=>`<li class="gd ${ck[x.id]?"done":""}" data-sec="${s.key}" data-id="${x.id}">
-      <input type="checkbox" ${ck[x.id]?"checked":""} aria-label="${esc(x.label)} erledigt">
-      <span class="l">${wBadge(x.w)}${esc(x.label)}${(!x.all&&(x.w||"ingame")==="ingame")?'<span class="pcflag">NUR PC</span>':""}</span><span class="v">${esc(x.value)}</span>
-      ${x.note?`<span class="nt">${noteHtml(x.note)}</span>`:""}
-    </li>`).join("");
-  }else{
-    body=rows.map(x=>`<li><span class="l">${wBadge(x.w)}${esc(x.label)}${(!x.all&&(x.w||"ingame")==="ingame")?'<span class="pcflag">NUR PC</span>':""}</span><span class="v">${esc(x.value)}</span>${x.note?`<span class="nt">${noteHtml(x.note)}</span>`:""}</li>`).join("");
+  <footer>
+    <span>Setup Vault · von MrMaik240</span>
+    <span>Nicht verbunden mit Activision oder Call of Duty.</span>
+    <span>Anonyme Besucherzählung mit GoatCounter, ohne Cookies.</span>
+  </footer>
+</div>
+<script>
+  // Gerät erkennen und passende Karte hervorheben
+  const ua = navigator.userAgent;
+  const isIOS = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  const isAndroid = /Android/.test(ua);
+  const id = isIOS ? "c-ios" : isAndroid ? "c-android" : "c-pc";
+  document.getElementById(id).classList.add("you");
+  if (isIOS || isAndroid) {
+    const grid = document.querySelector(".dl"); grid.prepend(document.getElementById(id));
   }
-  return `<article class="scard" id="sec-${s.key}">
-    <header><span class="ic">${ICONS[s.key]}</span><h3>${s.name}</h3><span class="c">${all.length} · ${con} Konsole</span></header>
-    ${mode==="edit"?`<p class="info">${s.info}</p>`:""}
-    ${rows.length?`<ul>${body}</ul>`:`<div class="empty">Noch nichts eingetragen.</div>`}
-    ${mode==="edit"?`<div class="add"><button class="btn small" data-add="${s.key}">+ Einstellung</button></div>`:""}
-  </article>`;
-}
-function renderSide(){
-  const gs=games();
-  $("sideGames").innerHTML=gs.map(g=>`<button data-game="${esc(g.name)}" style="--h:${g.h}" aria-current="${(state.view!=="home")&&((state.view==="game"&&state.game===g.name)||(state.view==="profile"&&(cur()?.game||"Ohne Spiel")===g.name))}"><span class="dot"></span>${esc(g.name)}<span class="n">${g.list.length}</span></button>`).join("")+
-  `<button data-act="newgame" style="color:var(--dim)"><span style="width:10px;text-align:center">+</span>Spiel hinzufügen</button>`;
-  $("tbHome").setAttribute("aria-current",state.view==="home");
-}
-function render(){
-  const v=state.view==="profile"?viewProfile():state.view==="game"?viewGame():viewHome();
-  $("view").innerHTML=v; renderSide(); growAll();
-}
-
-/* ---------- Ereignisse ---------- */
-document.addEventListener("click",e=>{
-  const t=e.target;
-  const lk=t.closest&&t.closest("a.lk"); if(lk&&window.SVBridge){e.preventDefault();copyText(lk.href);toast("Link kopiert – am PC öffnen");return;}
-  const goB=t.closest("[data-go]"); if(goB){go(goB.dataset.go);return;}
-  const gB=t.closest("[data-game]"); if(gB){go("game",{game:gB.dataset.game});return;}
-  const pB=t.closest("[data-prof]"); if(pB){go("profile",{cur:pB.dataset.prof,mode:"view",wf:null,sec:null});return;}
-  const mB=t.closest("[data-mode]"); if(mB){state.mode=mB.dataset.mode;save(false);render();return;}
-  const wB=t.closest("[data-wf]"); if(wB){state.wf=state.wf===wB.dataset.wf?null:wB.dataset.wf;save(false);render();return;}
-  const sB=t.closest("[data-secf]"); if(sB){const k=sB.dataset.secf||null;state.sec=(k&&state.sec===k)?null:k;save(false);render();return;}
-  if(t.closest("[data-close]")){t.closest(".dlg").hidden=true;return;}
-  const aB=t.closest("[data-add]"); if(aB){
-    const p=cur(),k=aB.dataset.add;(p.s[k]=p.s[k]||[]).push(r("","",k!=="mkb"&&k!=="system","",k==="system"?"system":"ingame"));p.updated=Date.now();save();render();
-    const inp=document.querySelectorAll(`#sec-${k} textarea.lbl`);if(inp.length)inp[inp.length-1].focus();return;}
-  const act=t.closest("[data-act]")?.dataset.act;
-  if(act){actions[act]?.();return;}
-  const li=t.closest("li[data-id]"); if(li){
-    const p=cur(),list=p.s[li.dataset.sec]||[],i=list.findIndex(x=>x.id===li.dataset.id);if(i<0)return;
-    if(state.mode==="guide"){const ck=state.checks[p.id]=state.checks[p.id]||{};ck[li.dataset.id]=!ck[li.dataset.id];save();render();return;}
-    if(state.mode==="edit"){
-      if(t.classList.contains("tag")){list[i].all=!list[i].all;p.updated=Date.now();save();render();}
-      else if(t.closest(".wbtn")){const k=WORDER.indexOf(list[i].w||"ingame");list[i].w=WORDER[(k+1)%WORDER.length];if(list[i].w==="system"||list[i].w==="software")list[i].all=false;if(list[i].w==="konsole"||list[i].w==="geraet")list[i].all=true;p.updated=Date.now();save();render();}
-      else if(t.classList.contains("x")){list.splice(i,1);p.updated=Date.now();save();render();}
-    }
-  }
-});
-function grow(t){t.style.height="auto";t.style.height=t.scrollHeight+"px";}
-function growAll(){document.querySelectorAll("li.ed textarea").forEach(grow);}
-window.addEventListener("resize",growAll);
-document.addEventListener("keydown",e=>{const t=e.target;if(e.key==="Enter"&&t.matches&&t.matches("li.ed textarea.lbl,li.ed textarea.val")){e.preventDefault();t.blur();}});
-document.addEventListener("input",e=>{
-  const t=e.target;
-  if(t.matches&&t.matches("li.ed textarea"))grow(t);
-  if(state.view!=="profile")return;
-  const p=cur();
-  const meta={mName:"name",mAuthor:"author"}[t.id];
-  if(meta){p[meta]=t.value;p.updated=Date.now();save();return;}
-  const li=t.closest("li.ed"); if(li){
-    const item=(p.s[li.dataset.sec]||[]).find(x=>x.id===li.dataset.id);if(!item)return;
-    if(t.classList.contains("lbl"))item.label=t.value;else if(t.classList.contains("val"))item.value=t.value;else if(t.classList.contains("note"))item.note=t.value;
-    p.updated=Date.now();save();
-  }
-});
-document.addEventListener("change",e=>{
-  const t=e.target,p=cur();
-  if(t.id==="consoleOnly"){state.consoleOnly=t.checked;save(false);render();}
-  else if(t.id==="mGame"){p.game=t.value;state.game=t.value;p.updated=Date.now();save();render();}
-  else if(t.id==="mPlat"){p.plat=t.value;p.updated=Date.now();save();}
-  else if(t.id==="mName"||t.id==="mAuthor"){render();}
-});
-
-const actions={
-  import(){$("importCode").value="";$("importMsg").textContent="";$("dlgImport").hidden=false;$("importCode").focus();},
-  newgame(){$("gameName").value="";$("gameMsg").textContent="";$("dlgGame").hidden=false;$("gameName").focus();},
-  rmgame(){state.extraGames=state.extraGames.filter(g=>g!==state.game);go("home");},
-  newprof(){
-    const g=state.game||"Ohne Spiel";
-    const p={id:uid(),created:Date.now(),name:"Neues Profil",author:"",game:g,plat:"PC – Controller",updated:Date.now(),s:{}};
-    SECTIONS.forEach(s=>p.s[s.key]=[]);
-    state.profiles.push(p);state.extraGames=state.extraGames.filter(x=>x!==g);
-    state.cur=p.id;state.view="profile";state.mode="edit";save(p.id);render();
-    const n=$("mName");if(n){n.focus();n.select();}
-  },
-  dup(){
-    const c=JSON.parse(JSON.stringify(cur()));c.id=uid();c.created=Date.now();c.updated=Date.now();c.name+=" (Kopie)";
-    SECTIONS.forEach(s=>(c.s[s.key]||[]).forEach(x=>x.id=uid()));
-    state.profiles.push(c);state.cur=c.id;save(c.id);render();toast("Kopie angelegt");
-  },
-  del(){$("delTxt").textContent=col?`„${cur().name}“ wird auf allen deinen Geräten gelöscht.`:`„${cur().name}“ wird auf diesem Gerät gelöscht.`;$("dlgDel").hidden=false;},
-  async share(){$("shareCode").value=await encode(cur());$("shareMsg").textContent="";$("shareMsg").className="msg";$("dlgShare").hidden=false;},
-  async phone(){
-    $("dlgPhone").hidden=false;$("phoneQr").hidden=true;$("phoneAddr").textContent="Suche Adresse…";
-    try{
-      const d=await (await fetch("api/info",{cache:"no-store"})).json();
-      if(!d.addresses.length){$("phoneAddr").textContent="Kein WLAN/Netzwerk gefunden.";return;}
-      const url=`http://${d.addresses[0]}:${d.port}`;
-      $("phoneAddr").innerHTML=d.addresses.map(a=>esc(`http://${a}:${d.port}`)).join("<br>");
-      if(window.qrcode){const q=qrcode(0,"M");q.addData(url);q.make();$("phoneQr").innerHTML=q.createSvgTag({cellSize:6,margin:0});$("phoneQr").hidden=false;}
-    }catch(e){$("phoneAddr").textContent="Nur möglich, wenn Setup Vault über start.bat am PC läuft.";}
-  },
-  resetchecks(){state.checks[cur().id]={};save();render();}
-};
-$("delYes").onclick=()=>{
-  const p=cur(),id=p.id,g=p.game||"Ohne Spiel";
-  state.profiles=state.profiles.filter(x=>x.id!==id);delete state.checks[id];
-  if(!state.profiles.length){const s=sample();state.profiles=[s];dirty.add(s.id);}
-  if(!state.profiles.some(x=>(x.game||"Ohne Spiel")===g)&&!state.extraGames.includes(g))state.extraGames.push(g);
-  state.cur=state.profiles[0].id;queue(id);$("dlgDel").hidden=true;go("game",{game:g});toast("Profil gelöscht");
-};
-$("gameDo").onclick=()=>{
-  const n=$("gameName").value.trim();
-  if(!n){$("gameMsg").className="msg err";$("gameMsg").textContent="Bitte gib einen Namen ein.";return;}
-  if(!games().some(g=>g.name.toLowerCase()===n.toLowerCase()))state.extraGames.push(n);
-  $("dlgGame").hidden=true;go("game",{game:games().find(g=>g.name.toLowerCase()===n.toLowerCase()).name});
-};
-$("gameName").addEventListener("keydown",e=>{if(e.key==="Enter")$("gameDo").click();});
-
-/* ---------- Teilen-Code ---------- */
-function b64(bytes){let s="";bytes.forEach(b=>s+=String.fromCharCode(b));return btoa(s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"")}
-function unb64(str){str=str.replace(/-/g,"+").replace(/_/g,"/");while(str.length%4)str+="=";const s=atob(str);return Uint8Array.from(s,c=>c.charCodeAt(0))}
-async function pipe(bytes,stream){const res=new Response(new Blob([bytes]).stream().pipeThrough(stream));return new Uint8Array(await res.arrayBuffer())}
-async function encode(p){
-  const slim={n:p.name,a:p.author,g:p.game,p:p.plat,s:{}};
-  SECTIONS.forEach(s=>slim.s[s.key]=(p.s[s.key]||[]).map(x=>[x.label,x.value,x.all?1:0,x.note||"",x.w||"ingame"]));
-  const raw=new TextEncoder().encode(JSON.stringify(slim));
-  if(window.CompressionStream){try{return "CSS1-"+b64(await pipe(raw,new CompressionStream("deflate-raw")))}catch(e){}}
-  return "CSS0-"+b64(raw);
-}
-async function decode(code){
-  code=code.replace(/\s+/g,"");
-  const m=code.match(/(CSS[01])-([A-Za-z0-9_-]+)/);if(!m)throw new Error("Das ist kein gültiger Code. Er muss mit CSS1- oder CSS0- anfangen.");
-  let bytes=unb64(m[2]);
-  if(m[1]==="CSS1"){if(!window.DecompressionStream)throw new Error("Dieser Browser ist zu alt für den Code. Bitte Chrome, Safari oder Edge aktualisieren.");bytes=await pipe(bytes,new DecompressionStream("deflate-raw"))}
-  const d=JSON.parse(new TextDecoder().decode(bytes));
-  const p={id:uid(),created:Date.now(),name:d.n||"Importiertes Profil",author:d.a||"",game:d.g||"Ohne Spiel",plat:d.p||"PC – Controller",updated:Date.now(),s:{}};
-  SECTIONS.forEach(s=>p.s[s.key]=(d.s?.[s.key]||[]).map(a=>({id:uid(),label:a[0],value:a[1],all:!!a[2],note:a[3]||"",w:WHERE[a[4]]?a[4]:null})));
-  return fixW(p);
-}
-async function copyText(t,fallbackEl){
-  if(window.SVBridge){try{SVBridge.copy(t);return true}catch(e){}}
-  try{await navigator.clipboard.writeText(t);return true}catch(e){if(fallbackEl){fallbackEl.focus();fallbackEl.select();}return false}
-}
-if((window.SVBridge&&SVBridge.share)||navigator.share){$("shareSend").hidden=false;}
-$("shareSend").onclick=()=>{const t="Mein Setup-Vault-Profil „"+cur().name+"“ – in Setup Vault auf „Code einfügen“ tippen:\n\n"+$("shareCode").value;
-  if(window.SVBridge&&SVBridge.share){try{SVBridge.share(t);}catch(e){}return;}
-  if(navigator.share)navigator.share({text:t}).catch(()=>{});};
-$("shareCopy").onclick=async()=>{
-  const ok=await copyText($("shareCode").value,$("shareCode"));
-  $("shareMsg").className="msg "+(ok?"ok":"");
-  $("shareMsg").textContent=ok?"Code kopiert. Jetzt in Discord oder WhatsApp einfügen.":"Code ist markiert. Jetzt mit Strg+C (Handy: lange drücken) kopieren.";
-};
-$("shareText").onclick=async()=>{
-  const p=cur();let t=`${p.name}${p.author?" (von "+p.author+")":""}\n${p.game} · ${p.plat}\n`;
-  SECTIONS.forEach(s=>{const rows=visibleRows(p,s.key);if(!rows.length)return;
-    t+=`\n== ${s.name.toUpperCase()} ==\n`;rows.forEach(x=>t+=`[ ] [${WHERE[x.w||"ingame"].name}] ${x.label}: ${x.value}${(!x.all&&(x.w||"ingame")==="ingame")?" (nur PC)":""}${x.note?"  – "+x.note:""}\n`);});
-  const ok=await copyText(t);
-  $("shareMsg").className="msg "+(ok?"ok":"err");
-  $("shareMsg").textContent=ok?"Text-Anleitung kopiert. Die kann man auch ohne App lesen.":"Kopieren wurde blockiert.";
-};
-$("importDo").onclick=async()=>{
-  try{
-    const p=await decode($("importCode").value);
-    state.profiles.push(p);state.extraGames=state.extraGames.filter(g=>g!==p.game);
-    $("dlgImport").hidden=true;save(p.id);go("profile",{cur:p.id,mode:"guide"});toast(`„${p.name}“ übernommen`);
-  }catch(e){$("importMsg").className="msg err";$("importMsg").textContent=/^(Das|Dieser)/.test(e.message||"")?e.message:"Der Code ist unvollständig oder beschädigt. Bitte komplett neu kopieren.";}
-};
-document.addEventListener("keydown",e=>{if(e.key==="Escape")document.querySelectorAll(".dlg").forEach(d=>d.hidden=true)});
-
-if("serviceWorker" in navigator&&location.protocol!=="file:"){navigator.serviceWorker.register("sw.js").catch(()=>{});}
-load();render();connect().catch(()=>setStatus("local"));
+  const main = document.getElementById("mainBtn").querySelector("span");
+  if (isAndroid) main.textContent = "Android-App holen";
+  if (isIOS) main.textContent = "Auf dem iPhone holen";
 </script>
 </body>
 </html>
